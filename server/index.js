@@ -2,12 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
+
 const app = express();
 app.use(express.json());
 
 
 // Add near top, after express.json()
 app.use('/api/auth', require('./routes/auth'));
+
+
+app.use('/api/summarize', require('./routes/summarize'));
 
 
 // Basic “Hello” route
