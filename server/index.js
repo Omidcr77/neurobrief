@@ -5,6 +5,11 @@ const mongoose = require('mongoose');
 const app = express();
 app.use(express.json());
 
+
+// Add near top, after express.json()
+app.use('/api/auth', require('./routes/auth'));
+
+
 // Basic “Hello” route
 app.get('/', (_, res) => res.send('🧠 NeuroBrief API is live!'));
 
