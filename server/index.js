@@ -1,18 +1,27 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-
+const cors = require('cors'); // Require the cors package
 
 const app = express();
 app.use(express.json());
 
+// Use CORS middleware
+app.use(cors()); // This will allow all origins by default
 
-// Add near top, after express.json()
+// If you want to restrict to specific origins, you can do:
+const corsOptions = {
+  origin: ['*'], // Replace with your allowed origins
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+};
+
+app.use(cors(corsOptions)); // Use the CORS middleware with options
+
+// Define your routes
 app.use('/api/auth', require('./routes/auth'));
-
-
 app.use('/api/summarize', require('./routes/summarize'));
-
+app.use('/api/summaries', require('./routes/history'));
 
 // Basic “Hello” route
 app.get('/', (_, res) => res.send('🧠 NeuroBrief API is live!'));

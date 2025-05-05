@@ -1,5 +1,4 @@
 // server/controllers/pdfController.js
-
 const fs      = require('fs');
 const pdf     = require('pdf-parse');
 const Summary = require('../models/Summary');
@@ -7,33 +6,32 @@ const { summarizeText } = require('../utils/openai');
 
 exports.pdfSummarize = async (req, res) => {
   try {
-    // 1. Read the uploaded file into a buffer
-    const dataBuffer = fs.readFileSync(req.file.path);
-
-    // 2. Extract text
-    const pdfData = await pdf(dataBuffer);
-    const fullText = pdfData.text;
-
-    if (!fullText || fullText.trim().length === 0) {
-      return res.status(422).json({ message: 'Could not extract any text from PDF.' });
+    // 1️⃣ Guard against no upload
+    if (!req.file) {
+      return res.status(400).json({ message: 'No PDF file uploaded.' });
     }
 
-    // 3. Summarize via OpenAI
-    const summary = await summarizeText(fullText);
+    // 2️⃣ Read and extract
+    const dataBuffer = fs.readFileSync(req.file.path);
+    const pdfData    = await pdf(dataBuffer);
+    const fullText   = pdfData.text?.trim();
 
-    // 4. Persist to MongoDB
-    const record = await Summary.create({
+    if (!fullText) {
+      return res.status(422).json({ message: 'Could not extract text from this PDF.' });
+    }
+
+    // 3️⃣ Summarize and persist
+    const summary = await summarizeText(fullText);
+    const record  = await Summary.create({
       user: req.user,
       inputType: 'pdf',
       input: req.file.path,
       summary
     });
 
-    // 5. Return result
-    res.json({ summary, id: record._id });
+    return res.json({ summary, id: record._id });
   } catch (err) {
     console.error('PDF processing error:', err);
-    res.status(500).json({ message: 'PDF processing error.' });
+    return res.status(500).json({ message: 'Server error while processing PDF.' });
   }
 };
- 
