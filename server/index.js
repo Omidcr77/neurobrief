@@ -22,13 +22,15 @@ app.use(cors(corsOptions)); // Use the CORS middleware with options
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/summarize', require('./routes/summarize'));
 app.use('/api/summaries', require('./routes/history')); 
+app.use('/api/admin', require('./routes/admin')); // admin route
+
 
 // Basic “Hello” route
 app.get('/', (_, res) => res.send('🧠 NeuroBrief API is live!'));
 
 const PORT = process.env.PORT || 5000; 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI) 
   .then(() => {
     console.log('✅ MongoDB connected');
     app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
