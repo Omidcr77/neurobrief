@@ -1,3 +1,4 @@
+// src/pages/LoginPage.js
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { useNavigate, Link }          from 'react-router-dom';
 import { FaSpinner, FaArrowLeft, FaMoon, FaSun } from 'react-icons/fa';
@@ -5,10 +6,10 @@ import api                            from '../api';
 import { ThemeContext }               from '../App';
 
 export default function LoginPage() {
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState('');
+  const [email, setEmail]         = useState('');
+  const [password, setPassword]   = useState('');
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState('');
   const [showToast, setShowToast] = useState(false);
 
   const navigate = useNavigate();
@@ -18,29 +19,7 @@ export default function LoginPage() {
   const { theme, setTheme } = useContext(ThemeContext);
   const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  // Form submit
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      // 1️⃣ Log in and store JWT
-      const { data } = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', data.token);
-
-      // 2️⃣ Fetch profile to get role, then persist it
-      const profileRes = await api.get('/auth/profile');
-      localStorage.setItem('role', profileRes.data.role);
-
-      // 3️⃣ Navigate into the app
-navigate('/summarize', { state: { showWelcome: true } });
-    } catch (err) {
-      setError(err.response?.data?.message || err.message);
-      setLoading(false);
-    }
-  };
-
-  // Inactivity timer (30s)
+  // Reset inactivity timer
   const resetTimer = () => {
     clearTimeout(timerRef.current);
     timerRef.current = setTimeout(() => setShowToast(true), 30000);
@@ -57,9 +36,49 @@ navigate('/summarize', { state: { showWelcome: true } });
     };
   }, []);
 
+  // Handle form submit
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      // 1️⃣ Log in and store JWT
+      const { data } = await api.post('/auth/login', { email, password });
+      localStorage.setItem('token', data.token);
+
+      // 2️⃣ Fetch profile (to get role) and store
+      const profileRes = await api.get('/auth/profile');
+      localStorage.setItem('role', profileRes.data.role);
+
+      // 3️⃣ Success → navigate into the app
+      navigate('/summarize', { state: { showWelcome: true } });
+
+    } catch (err) {
+      // Distinguish between status codes
+      if (err.response) {
+        const msg = err.response.data?.message || 'Unexpected error';
+        if (err.response.status === 403) {
+          // Inactive or banned
+          setError(msg);
+        } else if (err.response.status === 400) {
+          // Invalid credentials
+          setError(msg);
+        } else {
+          // Other server-side error
+          setError(msg);
+        }
+      } else {
+        // Network or other
+        setError(err.message);
+      }
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      {/* ─── Minimal Contextual Header ─── */}
+      {/* Header */}
       <header className="fixed top-0 left-0 w-full flex items-center justify-between px-4 h-12 bg-white dark:bg-gray-800 shadow-md z-20">
         <button onClick={() => navigate(-1)} className="text-gray-800 dark:text-gray-200">
           <FaArrowLeft size={20} />
@@ -72,9 +91,9 @@ navigate('/summarize', { state: { showWelcome: true } });
         </button>
       </header>
 
-      {/* ─── Main Form ─── */}
+      {/* Main Form */}
       <section className="relative min-h-screen flex items-center justify-center py-12 pt-16 bg-gradient-to-r from-indigo-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
-        {/* Blobs */}
+        {/* Decorative blobs */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-300 mix-blend-multiply blur-3xl opacity-20 dark:bg-indigo-700 dark:opacity-10 animate-blob" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-teal-300 mix-blend-multiply blur-2xl opacity-20 dark:bg-teal-700 dark:opacity-10 animate-blob animation-delay-4000" />
 
@@ -144,9 +163,9 @@ navigate('/summarize', { state: { showWelcome: true } });
         </div>
       </section>
 
-      {/* ─── Inactivity Toast ─── */}
+      {/* Inactivity Toast */}
       {showToast && (
-        <div className="fixed bottom-4 right-4 flex items-center bg-gray-800 text-white px-4 py-2 rounded shadow-lg z-30 transition-opacity duration-300">
+        <div className="fixed bottom-4 right-4 flex items-center bg-gray-800 text-white px-4 py-2 rounded shadow-lg z-30">
           <span>Need to go back?</span>
           <button onClick={() => navigate('/')} className="ml-2 underline font-medium">
             Click here.

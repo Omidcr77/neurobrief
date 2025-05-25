@@ -1,6 +1,7 @@
+// server/controllers/authController.js
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const jwt    = require('jsonwebtoken');
+const User   = require('../models/User');
 
 // GET /auth/profile
 exports.getProfile = async (req, res) => {
@@ -44,7 +45,7 @@ exports.updateProfile = async (req, res) => {
   }
 };
 
-
+// POST /auth/register
 exports.register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -58,10 +59,10 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // 3. Create user
+    // 3. Create user (status defaults to 'active')
     const user = await new User({ name, email, passwordHash }).save();
 
-    // 4. Generate JWT
+    // 4. Issue JWT
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
@@ -75,6 +76,7 @@ exports.register = async (req, res) => {
   }
 };
 
+// POST /auth/login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -91,7 +93,15 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // 3. Issue token
+    // 3. Block inactive / banned accounts
+    if (user.status === 'inactive') {
+      return res.status(403).json({ message: 'Your account has been deactivated.' });
+    }
+    if (user.status === 'banned') {
+      return res.status(403).json({ message: 'Your account is banned.' });
+    }
+
+    // 4. Issue token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,

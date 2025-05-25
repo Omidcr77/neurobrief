@@ -4,10 +4,8 @@ const { Parser }   = require('json2csv');
 const jwt          = require('jsonwebtoken');
 const User         = require('../models/User');
 const Summary      = require('../models/Summary');
-// (Optional) If you track login events, you might have:
-// const LoginLog  = require('../models/LoginLog');
 
-// ─── 1. List & filter users ─────────────────────────────────────────
+// 1. List & filter users
 exports.listUsers = async (req, res) => {
   const { page = 1, limit = 20, q, role, status } = req.query;
   const filter = {};
@@ -31,14 +29,14 @@ exports.listUsers = async (req, res) => {
   res.json({ users, total });
 };
 
-// ─── 2. Get single user ────────────────────────────────────────────
+// 2. Get single user
 exports.getUser = async (req, res) => {
   const user = await User.findById(req.params.id).select('-passwordHash');
   if (!user) return res.status(404).json({ message: 'User not found.' });
   res.json(user);
 };
 
-// ─── 3. Update profile & role ──────────────────────────────────────
+// 3. Update profile & role
 exports.updateUser = async (req, res) => {
   const updates = {};
   ['name', 'email', 'role'].forEach(f => {
@@ -53,9 +51,9 @@ exports.updateUser = async (req, res) => {
   res.json(user);
 };
 
-// ─── 4. Change status ───────────────────────────────────────────────
+// 4. Change status
 exports.changeStatus = async (req, res) => {
-  const { status } = req.body; // must be one of ['active','inactive','banned']
+  const { status } = req.body;
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { status },
@@ -65,17 +63,17 @@ exports.changeStatus = async (req, res) => {
   res.json(user);
 };
 
-// ─── 5. Soft-delete (deactivate) ───────────────────────────────────
+// 5. **Hard Delete** (true delete, not just deactivate)
 exports.deleteUser = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { status: 'inactive' });
+  const user = await User.findByIdAndDelete(req.params.id);
+  if (!user) return res.status(404).json({ message: 'User not found.' });
   res.status(204).send();
 };
 
-// ─── 6. Impersonate user ───────────────────────────────────────────
+// 6. Impersonate user
 exports.impersonateUser = async (req, res) => {
   const target = await User.findById(req.params.id);
   if (!target) return res.status(404).json({ message: 'User not found.' });
-  // Issue a short-lived JWT for that user
   const token = jwt.sign(
     { id: target._id },
     process.env.JWT_SECRET,
@@ -83,7 +81,6 @@ exports.impersonateUser = async (req, res) => {
   );
   res.json({ token });
 };
-
 // ─── 7. Built-in metrics (your old getMetrics) ──────────────────────
 exports.getMetrics = async (req, res) => {
   try {
