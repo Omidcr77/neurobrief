@@ -17,7 +17,6 @@ import HistoryPage           from './pages/HistoryPage';
 import DashboardPage         from './pages/DashboardPage';
 import AdminPage             from './pages/AdminPage';
 import UsersManagementPage   from './pages/UsersManagementPage';
-import AnalyticsPage         from './pages/AnalyticsPage';
 
 // Global theme context
 export const ThemeContext = createContext({
@@ -86,11 +85,6 @@ function Main() {
             path="/admin/users"
             element={isAuth ? <UsersManagementPage /> : <Navigate to="/login" />}
           />
-          <Route
-            path="/admin/analytics"
-            element={isAuth ? <AnalyticsPage /> : <Navigate to="/login" />}
-          />
-
           {/* Fallback */}
           <Route
             path="*"

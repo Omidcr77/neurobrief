@@ -62,7 +62,6 @@ export default function NavBar() {
     authLinks.push(
       { to: '/admin',           label: 'Admin',     type: 'link' },
       { to: '/admin/users',     label: 'Users',     type: 'link' },
-      { to: '/admin/analytics', label: 'Analytics', type: 'link' }
     );
   }
   authLinks.push({ to: '/', label: 'Logout', type: 'button' });

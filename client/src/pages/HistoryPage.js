@@ -1,13 +1,23 @@
-// src/pages/HistoryPage.js
-import React, { useState, useEffect } from 'react';
-import { FaSpinner } from 'react-icons/fa';
-import { jsPDF }     from 'jspdf';
-import api           from '../api';
+// src/pages/HistoryPage.jsx
+import React, { useState, useEffect, Fragment } from 'react';
+import {
+  FaSpinner,
+  FaTrash,
+  FaFileAlt,
+  FaFilePdf,
+  FaEye,
+  FaClipboard
+} from 'react-icons/fa';
+import { Dialog, Transition } from '@headlessui/react';
+import { jsPDF } from 'jspdf';
+import api from '../api';
 
 export default function HistoryPage() {
   const [summaries, setSummaries] = useState([]);
-  const [selected,  setSelected]  = useState(null);
-  const [loading,   setLoading]   = useState(true);
+  const [selected, setSelected]   = useState(null);
+  const [toDelete, setToDelete]   = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [copyMsg, setCopyMsg]     = useState('');
 
   useEffect(() => {
     api.get('/summaries')
@@ -19,10 +29,18 @@ export default function HistoryPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleDelete = async id => {
-    if (!window.confirm('Delete this summary?')) return;
-    await api.delete(`/summaries/${id}`);
-    setSummaries(list => list.filter(x => x._id !== id));
+  // hard delete once confirmed
+  const handleConfirmDelete = async () => {
+    if (!toDelete) return;
+    try {
+      await api.delete(`/summaries/${toDelete._id}`);
+      setSummaries(s => s.filter(x => x._id !== toDelete._id));
+    } catch (err) {
+      console.error('Delete failed:', err);
+      alert('Failed to delete.');
+    } finally {
+      setToDelete(null);
+    }
   };
 
   const downloadTxt = item => {
@@ -38,172 +56,196 @@ export default function HistoryPage() {
   const downloadPdf = item => {
     const doc = new jsPDF();
     const margin = 10;
-    const lineHeight = 7;
-    let cursorY = margin;
+    let y = margin;
     doc.setFontSize(12);
-
     item.summary.split('\n').forEach(line => {
-      const textLines = doc.splitTextToSize(line, 180);
-      textLines.forEach(tl => {
-        if (cursorY > 280) {
-          doc.addPage();
-          cursorY = margin;
-        }
-        doc.text(tl, margin, cursorY);
-        cursorY += lineHeight;
-      });
+      doc.text(line, margin, y);
+      y += 7;
+      if (y > 280) {
+        doc.addPage();
+        y = margin;
+      }
     });
-
     doc.save(`summary-${item._id}.pdf`);
+  };
+
+  const handleCopy = text => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopyMsg('Copied!');
+      setTimeout(() => setCopyMsg(''), 2000);
+    });
   };
 
   if (loading) {
     return (
-      <div className="pt-16 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300">
-        <FaSpinner className="animate-spin mr-2" /> Loading history…
+      <div className="pt-16 flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
+        <FaSpinner className="animate-spin text-2xl text-gray-600 dark:text-gray-400" />
+      </div>
+    );
+  }
+
+  if (summaries.length === 0) {
+    return (
+      <div className="pt-16 flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4">
+        <p className="text-gray-700 dark:text-gray-300 text-xl mb-4">No summaries yet.</p>
+        <a
+          href="/summarize"
+          className="px-5 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+        >
+          Create your first summary
+        </a>
       </div>
     );
   }
 
   return (
-    <section
-      className="
-        pt-16 pb-12 min-h-screen
-        bg-gradient-to-r from-indigo-50 via-white to-teal-50
-        dark:from-gray-900 dark:via-gray-800 dark:to-gray-900
-        relative overflow-hidden
-      "
-    >
-      {/* Animated blobs */}
-      <div className="
-        absolute -top-16 -left-16 w-72 h-72
-        bg-indigo-300 opacity-20 mix-blend-multiply blur-3xl
-        dark:bg-indigo-700 dark:opacity-10
-        animate-blob
-      " />
-      <div className="
-        absolute -bottom-16 -right-16 w-64 h-64
-        bg-teal-300 opacity-20 mix-blend-multiply blur-2xl
-        dark:bg-teal-700 dark:opacity-10
-        animate-blob animation-delay-4000
-      " />
-
-      <div className="relative z-10 max-w-3xl mx-auto px-4 space-y-8">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-          Your History
+    <section className="pt-16 pb-12 min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-6xl mx-auto px-4">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
+          Your History ({summaries.length})
         </h2>
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {summaries.map(item => (
+            <div
+              key={item._id}
+              className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow hover:shadow-lg transition-transform transform hover:-translate-y-1"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </p>
+                  <span className="inline-block mt-1 text-xs uppercase text-gray-600 dark:text-gray-500">
+                    {item.inputType}
+                  </span>
+                </div>
+                <div className="flex space-x-3 text-gray-500 dark:text-gray-400">
+                  <button onClick={() => setSelected(item)} title="View">
+                    <FaEye />
+                  </button>
+                  <button onClick={() => downloadTxt(item)} title="Download TXT">
+                    <FaFileAlt />
+                  </button>
+                  <button onClick={() => downloadPdf(item)} title="Download PDF">
+                    <FaFilePdf />
+                  </button>
+                  {/* now opens modal instead of instant delete */}
+                  <button
+                    onClick={() => setToDelete(item)}
+                    title="Delete"
+                  >
+                    <FaTrash className="text-red-600 dark:text-red-400" />
+                  </button>
+                </div>
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-sm line-clamp-3">
+                {item.summary}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {summaries.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">No summaries yet.</p>
-        ) : (
-          <ul className="space-y-6">
-            {summaries.map(item => (
-              <li
-                key={item._id}
-                className="
-                  bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg
-                  transition-transform hover:-translate-y-1
-                "
-              >
-                <div className="flex justify-between items-start">
+      {/* View Modal (unchanged) */}
+      <Transition appear show={!!selected} as={Fragment}>
+        <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={() => setSelected(null)}>
+          <div className="min-h-screen px-4 text-center bg-black bg-opacity-40">
+            <span className="inline-block h-screen align-middle" aria-hidden="true">
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-200" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"  leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="inline-block w-full max-w-2xl p-6 my-8 overflow-auto text-left align-middle bg-white dark:bg-gray-800 rounded-2xl shadow-xl">
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium text-gray-900 dark:text-gray-100"
+                >
+                  Summary Details
+                </Dialog.Title>
+                <div className="mt-4 space-y-4 text-gray-700 dark:text-gray-300 text-sm">
+                  <p><strong>Type:</strong> {selected?.inputType}</p>
+                  <p><strong>Date:</strong>{' '}
+                    {new Date(selected?.createdAt).toLocaleString()}
+                  </p>
                   <div>
-                    <span className="font-medium text-gray-700 dark:text-gray-300">
-                      {new Date(item.createdAt).toLocaleString()}
-                    </span>
-                    <span className="ml-2 text-sm uppercase text-gray-500 dark:text-gray-400">
-                      • {item.inputType}
-                    </span>
+                    <strong>Original:</strong>
+                    <pre className="mt-1 p-3 bg-gray-100 dark:bg-gray-700 rounded text-xs whitespace-pre-wrap max-h-32 overflow-auto">
+                      {selected?.input}
+                    </pre>
                   </div>
-                  <div className="space-x-3 text-sm">
-                    <button
-                      onClick={() => setSelected(item)}
-                      className="text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => downloadTxt(item)}
-                      className="text-green-600 dark:text-green-400 hover:underline"
-                    >
-                      TXT
-                    </button>
-                    <button
-                      onClick={() => downloadPdf(item)}
-                      className="text-purple-600 dark:text-purple-400 hover:underline"
-                    >
-                      PDF
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item._id)}
-                      className="text-red-600 dark:text-red-400 hover:underline"
-                    >
-                      Delete
-                    </button>
+                  <div>
+                    <strong>Summary:</strong>
+                    <pre className="mt-1 p-3 bg-gray-100 dark:bg-gray-700 rounded text-sm whitespace-pre-wrap max-h-64 overflow-auto">
+                      {selected?.summary}
+                    </pre>
                   </div>
                 </div>
-                <p className="mt-4 text-gray-700 dark:text-gray-300 whitespace-pre-wrap line-clamp-3">
-                <p className="mt-4 text-gray-800 dark:text-gray-100 whitespace-pre-wrap line-clamp-3">
-                  {item.summary}
-                </p> 
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
 
-        {/* Modal */}
-        {selected && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
-            onClick={() => setSelected(null)}
-          >
-            <div
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full p-6 overflow-auto"
-              onClick={e => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-                Summary Details
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                <strong>Type:</strong> {selected.inputType.toUpperCase()}<br/>
-                <strong>Date:</strong> {new Date(selected.createdAt).toLocaleString()}
-              </p>
-
-              <div className="mb-4">
-                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Original Input
-                </h4>
-                <pre className="whitespace-pre-wrap bg-gray-100 dark:bg-gray-700 p-3 rounded max-h-40 overflow-auto text-gray-800 dark:text-gray-200">
-                  {selected.input}
-                </pre>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Summary
-                </h4>
-                <pre className="whitespace-pre-wrap bg-gray-100 dark:bg-gray-700 p-3 rounded max-h-64 overflow-auto text-gray-800 dark:text-gray-200">
-                  {selected.summary}
-                </pre>
-              </div>
-
-              <div className="mt-6 text-right">
-                <button
-                  onClick={() => setSelected(null)}
-                  className="
-                    px-5 py-2 bg-gray-200 dark:bg-gray-700 
-                    text-gray-800 dark:text-gray-200 
-                    rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600
-                    transition
-                  "
-                >
-                  Close
-                </button>
-              </div>
-            </div>
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    onClick={() => handleCopy(selected.summary)}
+                    className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
+                  >
+                    <FaClipboard className="mr-2" />
+                    {copyMsg || 'Copy'}
+                  </button>
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="inline-flex items-center px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition"
+                  >
+                    Close
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
-        )}
-      </div>
+        </Dialog>
+      </Transition>
+
+      {/* Delete Confirmation Modal */}
+      <Transition appear show={!!toDelete} as={Fragment}>
+        <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={() => setToDelete(null)}>
+          <div className="min-h-screen px-4 text-center bg-black bg-opacity-40">
+            <span className="inline-block h-screen align-middle" aria-hidden="true">
+              &#8203;
+            </span>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-200" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"  leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle bg-white dark:bg-gray-800 rounded-2xl shadow-xl">
+                <Dialog.Title
+                  as="h3"
+                  className="text-lg font-medium text-gray-900 dark:text-gray-100"
+                >
+                  Confirm Deletion
+                </Dialog.Title>
+                <div className="mt-4 text-gray-700 dark:text-gray-300">
+                  Are you sure you want to permanently delete this summary?
+                </div>
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    onClick={() => setToDelete(null)}
+                    className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmDelete}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </Dialog>
+      </Transition>
     </section>
   );
 }
