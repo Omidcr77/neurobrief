@@ -1,178 +1,238 @@
-# NeuroBrief – AI-Powered Text Summarizer Web Platform
+# NeuroBrief
 
-**NeuroBrief** lets users submit raw text, PDF files, or URLs and receive concise AI-generated summaries.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
 
-## 🚀 Features
+AI-Powered Text Summarizer Web Platform
 
-- **AI-Powered Summarizer**  
-  Uses OpenAI GPT models for extractive and abstractive summaries.  
-- **Multiple Input Types**  
-  • Raw text  
-  • PDF file uploads  
-  • URL article scraping  
-- **User Accounts**  
-  • Registration & login with JWT auth  
-  • History of past summaries  
-- **Export Options**  
-  • Download summary as `.txt` or `.pdf`  
-- **Responsive UI**  
-  Built in React.js + Tailwind CSS  
+NeuroBrief empowers users to transform lengthy text, PDFs, or web articles into concise, insight-rich summaries using state-of-the-art GPT models. Whether you need a quick overview, detailed breakdown, or bullet-point highlights, NeuroBrief delivers.
 
-## 📂 Repository Structure
+---
 
-```
-neurobrief/
-├── server/           ← Backend (Node.js + Express)
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── utils/
-│   ├── .env.example
-│   └── index.js
-├── client/           ← Frontend (React.js + Tailwind CSS)
-│   ├── public/
-│   ├── src/
-│   │   ├── api.js
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── index.css
-│   │   └── App.js
-│   ├── tailwind.config.js
-│   └── postcss.config.js
-└── README.md         ← This file
-```
+## Table of Contents
 
-## 🛠 Prerequisites
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Clone & Installation](#clone--installation)
+  - [Configuration](#configuration)
+  - [Running the App](#running-the-app)
+- [Usage](#usage)
+  - [API Endpoints](#api-endpoints)
+  - [Client UI Overview](#client-ui-overview)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
 
-- Node.js v18+ and npm  
-- MongoDB (local or Atlas)  
-- OpenAI API key  
-- (Optional) Cloudinary account for file storage  
+---
 
-## ⚙️ Setup Guide
+## Key Features
 
-### 1. Clone the Repo
+- **Multi-Modal Input**: Summarize raw text, upload PDFs, or fetch & summarize articles via URL.
+- **Flexible Summarization Options**:
+  - **Length**: `short` (≤50 words), `medium` (~100 words), `detailed` (≥200 words).
+  - **Style**: `abstractive`, `extractive` (quote key sentences), or `bullets`.
+  - **Focus**: Specify topics or sections to emphasize.
+- **User Authentication & Profiles**:
+  - Secure JWT-based sign up, login, and session management.
+  - Passwords hashed via bcrypt.
+- **History & Export**:
+  - View, search, and delete past summaries in your dashboard.
+  - Download results as `.txt`, `.pdf` (via jsPDF), or export CSV/Excel.
+- **Admin Dashboard**:
+  - **User Management**: List, filter, update, deactivate/delete users, impersonate accounts.
+  - **Reports & Metrics**: Real-time metrics (user & summary counts), daily registrations, summary trends, and CSV/Excel exports.
+- **Responsive & Interactive UI**:
+  - Built with React (v19), Tailwind v3, Headless UI, Framer Motion, AOS.
+  - Charts & graphs powered by Chart.js & Recharts.
+  - Markdown rendering via React Markdown + GFM support.
+  - Accessible modals and routing (React Router v7).
+- **Robust Backend**:
+  - Node & Express v5, MongoDB (via Mongoose).
+  - PDF parsing (`pdf-parse`), article extraction (Mozilla Readability & JSDOM).
+  - CORS, file uploads (Multer), and secure environment management.
+
+---
+
+## Tech Stack
+
+- **Frontend**: React · Tailwind CSS · Headless UI · Framer Motion · AOS · React Router
+- **Backend**: Node.js · Express · MongoDB · Mongoose · JWT · bcrypt · Multer
+- **AI & NLP**: OpenAI GPT-4.1 · `openai` SDK · Mozilla Readability · `pdf-parse`
+- **Visualizations**: Chart.js · Recharts · jsPDF · React Markdown
+- **Utilities**: Axios · CORS · dotenv
+- **Testing**: Jest · Supertest · React Testing Library
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js v18+ & npm
+- MongoDB (local or Atlas)
+- OpenAI API key
+- (Optional) Cloudinary account for PDF storage
+
+### Clone & Installation
 
 ```bash
-git clone https://github.com/<your-org>/neurobrief.git
+# Clone the repository
+git clone https://github.com/Omidcr77/neurobrief.git
 cd neurobrief
 ```
 
-### 2. Backend
-
+#### Backend Setup
 ```bash
 cd server
 npm install
 cp .env.example .env
 ```
 
-Edit `.env` and fill in:
-
-```env
-MONGO_URI=your-mongodb-connection-string
-JWT_SECRET=your-jwt-secret
-OPENAI_API_KEY=your-openai-api-key
-CLOUDINARY_URL=your-cloudinary-url  # optional
-```
-
-### 3. Frontend
-
+#### Frontend Setup
 ```bash
 cd ../client
 npm install
 ```
 
-Create `client/.env` with:
+### Configuration
 
-```env
+Create environment files:
+
+**Server (`server/.env`):**
+```ini
+MONGO_URI=<your-mongodb-connection-string>
+JWT_SECRET=<your-jwt-secret>
+OPENAI_API_KEY=<your-openai-api-key>
+CLOUDINARY_URL=<optional-cloudinary-url>
+```
+
+**Client (`client/.env`):**
+```ini
 REACT_APP_API_URL=http://localhost:5000
 ```
 
-## 👩‍💻 Development
+### Running the App
 
-- **Run Backend** (auto-reload):
+```bash
+# In one terminal (Backend)
+cd server
+npm run dev   # nodemon auto-reload
 
-  ```bash
-  cd server
-  npm run dev
-  ```
+# In another terminal (Frontend)
+cd client
+npm start     # launches at http://localhost:3000
+```
 
-  Server runs on port **5000**.
+---
 
-- **Run Frontend**:
+## Usage
 
-  ```bash
-  cd client
-  npm start
-  ```
+### API Endpoints
 
-  Opens at http://localhost:3000.
+| Method | Endpoint                    | Description                                  | Auth     |
+| ------ | --------------------------- | -------------------------------------------- | -------- |
+| GET    | `/`                         | Health check: returns "NeuroBrief API is live!" | No       |
+| POST   | `/api/auth/register`        | Create a new user                            | No       |
+| POST   | `/api/auth/login`           | Authenticate & receive JWT                   | No       |
+| POST   | `/api/summarize/text`       | Summarize raw text                           | Yes      |
+| POST   | `/api/summarize/pdf`        | Summarize uploaded PDF                       | Yes      |
+| POST   | `/api/summarize/url`        | Summarize web article                        | Yes      |
+| GET    | `/api/summaries`            | List user’s past summaries                   | Yes      |
+| GET    | `/api/summaries/:id`        | Retrieve a single summary by ID              | Yes      |
+| DELETE | `/api/summaries/:id`        | Delete a summary                             | Yes      |
+| **Admin** |                         |                                              |          |
+| GET    | `/api/admin/users`          | List & filter all users                      | Admin    |
+| GET    | `/api/admin/users/:id`      | Get user details                             | Admin    |
+| PUT    | `/api/admin/users/:id`      | Update user profile/role                     | Admin    |
+| PATCH  | `/api/admin/users/:id/status` | Change user status                         | Admin |
+| DELETE | `/api/admin/users/:id`      | Delete a user                                | Admin    |
+| POST   | `/api/admin/users/:id/impersonate` | Impersonate a user                      | Admin    |
+| GET    | `/api/admin/metrics`        | Retrieve platform usage metrics              | Admin    |
+| GET    | `/api/admin/reports/user-activity`   | Registrations over time            | Admin    |
+| GET    | `/api/admin/reports/summary-trends`  | Summary activity trends             | Admin    |
+| GET    | `/api/admin/reports/export/:type`    | Export `users` or `summaries` as CSV | Admin    |
 
-## 🧪 Testing
+### Client UI Overview
 
-### Backend Tests
+- **Home**: Quick summarization form with customizable options.
+- **Login / Register**: Access or create your account.
+- **Dashboard**: View and manage past summaries, filter, delete, and export.
+- **Admin Panel**: (Admin users only) Manage users and view system metrics.
 
+---
+
+## Testing
+
+#### Backend Tests
 ```bash
 cd server
 npm test
 ```
+- Utilizes Jest & Supertest with in-memory MongoDB.
 
-- Uses **Jest** & **Supertest** with an in-memory MongoDB.
-
-### Frontend Tests
-
+#### Frontend Tests
 ```bash
 cd client
 npm test
 ```
+- Powered by React Testing Library & Jest.
 
-- Uses **React Testing Library** & **Jest**.
+---
 
-## 📦 Build & Deployment
+## Deployment
 
 1. **Build Frontend**:
+    ```bash
+    cd client
+    npm run build
+    ```
 
-   ```bash
-   cd client
-   npm run build
-   ```
+2. **Serve Static Files** (Option A: Vercel/Netlify)
 
-   Generates `client/build/`.
+3. **Serve via Express** (Option B):
+    ```js
+    // in server/index.js
+    app.use(express.static(path.join(__dirname, '../client/build')));
+    app.get('*', (req, res) =>
+      res.sendFile(path.join(__dirname, '../client/build/index.html'))
+    );
+    ```
+4. Configure production `.env` and ensure HTTPS, secure cookies.
 
-2. **Serve in Production**:
+---
 
-   - **Option A**: Deploy `client/build` to Netlify/Vercel.  
-   - **Option B**: Serve static files from Express:
+## Roadmap
 
-     ```js
-     // in server/index.js
-     app.use(express.static(path.join(__dirname, '../client/build')));
-     app.get('*', (req, res) =>
-       res.sendFile(path.join(__dirname, '../client/build/index.html'))
-     );
-     ```
+- ✅ Core summarization (text, PDF, URL)
+- ✅ History & exports
+- ✅ User authentication & roles
+- ✅ Admin metrics, reporting & exports
+- 🔄 UI/UX enhancements (animations, charts)
+- 🚀 Dockerization & CI/CD pipeline
+- 📱 Mobile-responsive optimizations
 
-3. **Environment**:
+---
 
-   - Ensure production `.env` has valid keys.  
-   - Use HTTPS and secure cookie flags.
+## Contributing
 
-## 🔒 Security & Privacy
+1. Fork the repository.
+2. Create a feature branch: `git checkout -b feature/YourFeature`.
+3. Commit your changes: `git commit -m "Add Feature"`.
+4. Push to your branch: `git push origin feature/YourFeature`.
+5. Open a Pull Request; ensure tests pass.
 
-- All inputs are validated and sanitized.  
-- No sensitive inputs are logged.  
-- JWT tokens expire after 7 days.  
-- CORS policies restrict origins.
+Please follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-## 🤝 Contributing
+---
 
-1. Fork the repo.  
-2. Create a feature branch: `git checkout -b feature/YourFeature`.  
-3. Commit your changes: `git commit -m "Add YourFeature"`.  
-4. Push to your branch: `git push origin feature/YourFeature`.  
-5. Open a Pull Request.
+## License
 
-## 📄 License
+This project is licensed under the [MIT License](LICENSE).
 
-This project is released under the [MIT License](LICENSE).
+---
+
+© 2025 Omid Cheraghi (Omidcr77)
