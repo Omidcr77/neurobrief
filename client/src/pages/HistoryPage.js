@@ -6,7 +6,8 @@ import {
   FaFileAlt,
   FaFilePdf,
   FaEye,
-  FaClipboard
+  FaClipboard,
+  FaCheckCircle,
 } from 'react-icons/fa';
 import { Dialog, Transition } from '@headlessui/react';
 import { jsPDF } from 'jspdf';
@@ -17,8 +18,11 @@ export default function HistoryPage() {
   const [selected, setSelected]   = useState(null);
   const [toDelete, setToDelete]   = useState(null);
   const [loading, setLoading]     = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [copyMsg, setCopyMsg]     = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
+  // load history
   useEffect(() => {
     api.get('/summaries')
       .then(res => setSummaries(res.data))
@@ -29,16 +33,21 @@ export default function HistoryPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  // hard delete once confirmed
+  // confirm & perform delete
   const handleConfirmDelete = async () => {
     if (!toDelete) return;
+    setDeleteLoading(true);
     try {
       await api.delete(`/summaries/${toDelete._id}`);
-      setSummaries(s => s.filter(x => x._id !== toDelete._id));
+      setSummaries((s) => s.filter(x => x._id !== toDelete._id));
+      // show success toast
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (err) {
       console.error('Delete failed:', err);
       alert('Failed to delete.');
     } finally {
+      setDeleteLoading(false);
       setToDelete(null);
     }
   };
@@ -84,7 +93,7 @@ export default function HistoryPage() {
     );
   }
 
-  if (summaries.length === 0) {
+  if (!summaries.length) {
     return (
       <div className="pt-16 flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900 px-4">
         <p className="text-gray-700 dark:text-gray-300 text-xl mb-4">No summaries yet.</p>
@@ -100,15 +109,15 @@ export default function HistoryPage() {
 
   return (
     <section className="pt-16 pb-12 min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-          Your History ({summaries.length})
+      <div className="max-w-6xl mx-auto px-4 space-y-6">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          Your History <span className="text-indigo-600">({summaries.length})</span>
         </h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {summaries.map(item => (
             <div
               key={item._id}
-              className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow hover:shadow-lg transition-transform transform hover:-translate-y-1"
+              className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow hover:shadow-lg transform hover:-translate-y-1 transition"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
@@ -120,21 +129,33 @@ export default function HistoryPage() {
                   </span>
                 </div>
                 <div className="flex space-x-3 text-gray-500 dark:text-gray-400">
-                  <button onClick={() => setSelected(item)} title="View">
+                  <button
+                    onClick={() => setSelected(item)}
+                    title="View"
+                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                  >
                     <FaEye />
                   </button>
-                  <button onClick={() => downloadTxt(item)} title="Download TXT">
+                  <button
+                    onClick={() => downloadTxt(item)}
+                    title="Download TXT"
+                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                  >
                     <FaFileAlt />
                   </button>
-                  <button onClick={() => downloadPdf(item)} title="Download PDF">
+                  <button
+                    onClick={() => downloadPdf(item)}
+                    title="Download PDF"
+                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition"
+                  >
                     <FaFilePdf />
                   </button>
-                  {/* now opens modal instead of instant delete */}
                   <button
                     onClick={() => setToDelete(item)}
                     title="Delete"
+                    className="hover:text-red-600 dark:hover:text-red-400 transition"
                   >
-                    <FaTrash className="text-red-600 dark:text-red-400" />
+                    <FaTrash />
                   </button>
                 </div>
               </div>
@@ -146,17 +167,25 @@ export default function HistoryPage() {
         </div>
       </div>
 
-      {/* View Modal (unchanged) */}
+      {/* View Modal */}
       <Transition appear show={!!selected} as={Fragment}>
-        <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={() => setSelected(null)}>
+        <Dialog
+          as="div"
+          className="fixed inset-0 z-50 overflow-y-auto"
+          onClose={() => setSelected(null)}
+        >
           <div className="min-h-screen px-4 text-center bg-black bg-opacity-40">
             <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
             <Transition.Child
               as={Fragment}
-              enter="ease-out duration-200" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
-              leave="ease-in duration-150"  leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="inline-block w-full max-w-2xl p-6 my-8 overflow-auto text-left align-middle bg-white dark:bg-gray-800 rounded-2xl shadow-xl">
                 <Dialog.Title
@@ -166,9 +195,11 @@ export default function HistoryPage() {
                   Summary Details
                 </Dialog.Title>
                 <div className="mt-4 space-y-4 text-gray-700 dark:text-gray-300 text-sm">
-                  <p><strong>Type:</strong> {selected?.inputType}</p>
-                  <p><strong>Date:</strong>{' '}
-                    {new Date(selected?.createdAt).toLocaleString()}
+                  <p>
+                    <strong>Type:</strong> {selected?.inputType}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {new Date(selected?.createdAt).toLocaleString()}
                   </p>
                   <div>
                     <strong>Original:</strong>
@@ -183,7 +214,6 @@ export default function HistoryPage() {
                     </pre>
                   </div>
                 </div>
-
                 <div className="mt-6 flex justify-end space-x-3">
                   <button
                     onClick={() => handleCopy(selected.summary)}
@@ -207,15 +237,23 @@ export default function HistoryPage() {
 
       {/* Delete Confirmation Modal */}
       <Transition appear show={!!toDelete} as={Fragment}>
-        <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={() => setToDelete(null)}>
+        <Dialog
+          as="div"
+          className="fixed inset-0 z-50 overflow-y-auto"
+          onClose={() => toDelete && !deleteLoading && setToDelete(null)}
+        >
           <div className="min-h-screen px-4 text-center bg-black bg-opacity-40">
             <span className="inline-block h-screen align-middle" aria-hidden="true">
               &#8203;
             </span>
             <Transition.Child
               as={Fragment}
-              enter="ease-out duration-200" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100"
-              leave="ease-in duration-150"  leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95"
+              enter="ease-out duration-200"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-150"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle bg-white dark:bg-gray-800 rounded-2xl shadow-xl">
                 <Dialog.Title
@@ -230,14 +268,17 @@ export default function HistoryPage() {
                 <div className="mt-6 flex justify-end space-x-3">
                   <button
                     onClick={() => setToDelete(null)}
-                    className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition"
+                    disabled={deleteLoading}
+                    className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-600 transition disabled:opacity-50"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={handleConfirmDelete}
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                    disabled={deleteLoading}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition flex items-center gap-2 disabled:opacity-50"
                   >
+                    {deleteLoading && <FaSpinner className="animate-spin" />}
                     Delete
                   </button>
                 </div>
@@ -245,6 +286,23 @@ export default function HistoryPage() {
             </Transition.Child>
           </div>
         </Dialog>
+      </Transition>
+
+      {/* Success Toast */}
+      <Transition
+        show={showSuccess}
+        as={Fragment}
+        enter="transition ease-out duration-300"
+        enterFrom="opacity-0 translate-y-4"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-200"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 translate-y-4"
+      >
+        <div className="fixed bottom-6 right-6 bg-green-500 text-white px-5 py-3 rounded-lg shadow-lg flex items-center space-x-2 z-50">
+          <FaCheckCircle />
+          <span>Deleted successfully!</span>
+        </div>
       </Transition>
     </section>
   );

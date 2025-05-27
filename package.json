@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "aos": "^2.3.4",
+    "framer-motion": "^12.14.0",
     "json2csv": "^6.0.0-alpha.2",
+    "react-countup": "^6.5.3",
     "recharts": "^2.15.3"
   }
 }

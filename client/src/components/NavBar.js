@@ -1,200 +1,405 @@
 // src/components/NavBar.js
-import React, { useState, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FiMenu, FiX } from 'react-icons/fi';
-import { FaMoon, FaSun } from 'react-icons/fa';
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
+import {
+  FiMenu,
+  FiX,
+} from 'react-icons/fi';
+import {
+  FaMoon,
+  FaSun,
+  FaUserCircle,
+} from 'react-icons/fa';
+import api from '../api';
 import { ThemeContext } from '../App';
 
 export default function NavBar() {
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [user, setUser] = useState(null);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
+  const avatarMenuRef = useRef(null);
+
   const { pathname } = useLocation();
-  const isLanding = pathname === '/';
-  const isAuth = !!localStorage.getItem('token');
-  const isAdmin = localStorage.getItem('role') === 'admin';
+  const navigate     = useNavigate();
+  const isLanding    = pathname === '/';
+  const isAuth       = !!localStorage.getItem('token');
+  const isAdmin      = localStorage.getItem('role') === 'admin';
+
   const { theme, setTheme } = useContext(ThemeContext);
+  const toggleTheme = () =>
+    setTheme(theme === 'dark' ? 'light' : 'dark');
 
-  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
+  // fetch profile if logged in
+  useEffect(() => {
+    if (!isAuth) return;
+    let cancel = false;
+    api.get('/auth/profile')
+      .then((res) => {
+        if (!cancel) setUser(res.data);
+      })
+      .catch(console.error);
+    return () => { cancel = true; };
+  }, [isAuth]);
 
+  // click‐outside to close avatar dropdown
+  useEffect(() => {
+    const onClick = (e) => {
+      if (
+        avatarMenuRef.current &&
+        !avatarMenuRef.current.contains(e.target)
+      ) {
+        setAvatarMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClick);
+    return () =>
+      document.removeEventListener('mousedown', onClick);
+  }, []);
+
+  // scroll-spy for landing anchors
+  useEffect(() => {
+    if (!isLanding) return;
+    const sections = ['hero','about','services','contact'];
+    const opts = { rootMargin:'-50% 0px -50% 0px', threshold:0 };
+    const obs = sections.map((id) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const o = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) setActiveSection(id);
+        });
+      }, opts);
+      o.observe(el);
+      return o;
+    }).filter(Boolean);
+    return () => obs.forEach((o) => o.disconnect());
+  }, [isLanding]);
+
+  // smooth scroll
   const handleScrollTo = (e, id) => {
     e.preventDefault();
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById(id)?.scrollIntoView({ behavior:'smooth' });
     setOpen(false);
   };
 
+  // link colors based on theme / landing vs inner
   const landingTextColor =
-    theme === 'dark' ? 'text-white hover:text-blue-200' : 'text-gray-800 hover:text-blue-600';
+    theme === 'dark'
+      ? 'text-white hover:text-blue-200'
+      : 'text-gray-800 hover:text-blue-600';
   const linkColor = isLanding
     ? landingTextColor
-    : 'text-gray-800 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400';
+    : 'text-gray-800 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400';
   const logoColor = isLanding
-    ? theme === 'dark'
-      ? 'text-white'
-      : 'text-gray-800'
+    ? theme==='dark' ? 'text-white' : 'text-gray-800'
     : 'text-gray-800 dark:text-gray-100';
-  const iconColor = isLanding
-    ? theme === 'dark'
-      ? 'text-white'
-      : 'text-gray-800'
-    : 'text-gray-800 dark:text-gray-100';
+  const iconColor = logoColor;
   const mobileColor = isLanding
     ? landingTextColor
-    : 'text-gray-800 hover:text-blue-600 dark:text-gray-200 dark:hover:text-blue-400';
+    : 'text-gray-800 dark:text-gray-200';
 
+  // your link arrays:
   const landingLinks = [
-    { to: '/',        label: 'Home',     type: 'link'   },
-    { to: '#about',   label: 'About',    type: 'anchor' },
-    { to: '#services',label: 'Services', type: 'anchor' },
-    { to: '#contact', label: 'Contact',  type: 'anchor' },
-    { to: '/login',   label: 'Login',    type: 'link'   },
-    { to: '/register',label: 'Sign Up',  type: 'link'   },
+    { to:'#hero',     label:'Home',     type:'anchor' },
+    { to:'#about',    label:'About',    type:'anchor' },
+    { to:'#services', label:'Services', type:'anchor' },
+    { to:'#contact',  label:'Contact',  type:'anchor' },
   ];
   const guestLinks = [
-    { to: '/login',   label: 'Login',    type: 'link' },
-    { to: '/register',label: 'Sign Up',  type: 'link' },
+    { to:'/login',    label:'Login',   type:'link' },
+    { to:'/register', label:'Sign Up', type:'link', primary:true },
   ];
   const authLinks = [
-    { to: '/summarize', label: 'Summarize', type: 'link' },
-    { to: '/history',   label: 'History',   type: 'link' },
-    { to: '/dashboard', label: 'Dashboard', type: 'link' },
+    { to:'/summarize',label:'Summarize',type:'link' },
+    { to:'/history',  label:'History',  type:'link' },
+    { to:'/dashboard',label:'Dashboard',type:'link' },
   ];
   if (isAdmin) {
     authLinks.push(
-      { to: '/admin',           label: 'Admin',     type: 'link' },
-      { to: '/admin/users',     label: 'Users',     type: 'link' },
+      { to:'/admin',      label:'Admin', type:'link' },
+      { to:'/admin/users',label:'Users', type:'link' },
     );
   }
-  authLinks.push({ to: '/', label: 'Logout', type: 'button' });
 
-  const linksToShow = isLanding ? landingLinks : isAuth ? authLinks : guestLinks;
+  // ✏️ UPDATED: if NOT auth, merge landing & guest so login/signup appear on homepage
+  const linksToShow = isAuth
+    ? authLinks
+    : [...landingLinks, ...guestLinks];
+
+  const getLinkClass = (link, base) => {
+    let isActive = false;
+    if (link.type==='anchor') {
+      isActive = isLanding && activeSection===link.to.slice(1);
+    } else {
+      isActive = !isLanding && pathname===link.to;
+    }
+    let cls = base;
+    if (link.primary) {
+      cls += ' bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded transition';
+    }
+    if (isActive) {
+      cls += ' text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400';
+    }
+    return cls;
+  };
+
+  // initials for avatar
+  const getInitials = (name, email) => {
+    if (name) {
+      const parts = name.trim().split(/\s+/);
+      if (parts.length>=2) {
+        return (parts[0][0]+parts[1][0]).toUpperCase();
+      }
+      return name.slice(0,2).toUpperCase();
+    }
+    return email.slice(0,2).toUpperCase();
+  };
 
   return (
-    <nav
-      className={`
-        fixed top-0 w-full z-50 border-b border-gray-200 dark:border-gray-700
-        ${
-          isLanding
-            ? 'bg-white bg-opacity-20 backdrop-blur-lg'
-            : 'bg-white dark:bg-gray-800'
-        }
-      `}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex justify-between items-center h-16">
-        <Link to="/" className={`text-2xl font-bold transition-colors duration-200 ${logoColor}`}>
-          NeuroBrief
-        </Link>
+    <>
+      <a href={isLanding?'#hero':'/'} className="sr-only focus:not-sr-only">
+        Skip to content
+      </a>
+      <nav
+        role="navigation"
+        aria-label="Main navigation"
+        className={`
+          fixed top-0 w-full z-50 transition-colors duration-300
+          ${isLanding
+            ? 'bg-white bg-opacity-20 backdrop-blur-lg border-transparent'
+            : 'bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700'}
+        `}
+      >
+        <div className="max-w-7xl mx-auto px-6 flex justify-between items-center h-16">
+          <Link to="/" className={`text-2xl font-bold ${logoColor}`}>
+            NeuroBrief
+          </Link>
 
-        <div className="hidden md:flex items-center space-x-6">
-          {linksToShow.map((link, idx) => {
-            const base = `relative px-3 py-2 font-medium transition-colors duration-200 ${linkColor}`;
-            if (link.type === 'anchor') {
-              const id = link.to.replace('#', '');
+          {/* DESKTOP */}
+          <div className="hidden md:flex items-center space-x-6">
+            {linksToShow.map((link, i) => {
+              const base = `relative font-medium transition-colors duration-200 ${linkColor}`;
+              if (link.type==='anchor') {
+                return (
+                  <a
+                    key={i}
+                    href={link.to}
+                    onClick={(e)=>handleScrollTo(e,link.to.slice(1))}
+                    className={getLinkClass(link, base)}
+                  >
+                    {link.label}
+                  </a>
+                );
+              }
+              return (
+                <Link
+                  key={i}
+                  to={link.to}
+                  className={getLinkClass(link, base)}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+              aria-label="Toggle theme"
+            >
+              {theme==='dark'
+                ? <FaSun className="text-yellow-400"/>
+                : <FaMoon className="text-gray-800 dark:text-gray-200"/>}
+            </button>
+
+            {/* Avatar Dropdown */}
+            {isAuth && (
+              <div className="relative" ref={avatarMenuRef}>
+                <button
+                  onClick={()=>setAvatarMenuOpen(o=>!o)}
+                  className="
+                    w-10 h-10 rounded-full bg-indigo-600 text-white
+                    flex items-center justify-center
+                    focus:outline-none focus:ring-2 focus:ring-indigo-400
+                  "
+                  aria-haspopup="true"
+                  aria-expanded={avatarMenuOpen}
+                >
+                  {user
+                    ? getInitials(user.name,user.email)
+                    : <FaUserCircle className="text-2xl"/>}
+                </button>
+                {avatarMenuOpen && (
+                  <div className="
+                    absolute right-0 mt-2 w-48
+                    bg-white dark:bg-gray-800
+                    rounded-md shadow-lg py-1 z-50
+                  ">
+                    <Link
+                      to="/dashboard"
+                      className="
+                        block px-4 py-2 text-gray-700 dark:text-gray-200
+                        hover:bg-gray-100 dark:hover:bg-gray-700
+                      "
+                      onClick={()=>setAvatarMenuOpen(false)}
+                    >
+                      Profile
+                    </Link>
+                    <button
+                      onClick={()=>{
+                        navigate('/dashboard',{state:{openChangePwd:true}});
+                        setAvatarMenuOpen(false);
+                      }}
+                      className="
+                        w-full text-left px-4 py-2
+                        text-gray-700 dark:text-gray-200
+                        hover:bg-gray-100 dark:hover:bg-gray-700
+                      "
+                    >
+                      Change Password
+                    </button>
+                    <button
+                      onClick={()=>{
+                        localStorage.clear();
+                        window.location.href='/';
+                      }}
+                      className="
+                        w-full text-left px-4 py-2
+                        text-red-600 hover:bg-red-50
+                        dark:text-red-400 dark:hover:bg-gray-700
+                      "
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* MOBILE */}
+          <div className="flex md:hidden items-center space-x-2">
+            <button
+              onClick={()=>setOpen(o=>!o)}
+              className={`p-2 text-2xl ${iconColor}`}
+            >
+              {open ? <FiX/> : <FiMenu/>}
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
+            >
+              {theme==='dark'
+                ? <FaSun className="text-yellow-400"/>
+                : <FaMoon className="text-gray-800 dark:text-gray-200"/>}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE MENU */}
+      <div className={`
+        md:hidden fixed inset-0 z-40 transform
+        transition-transform duration-300 ease-in-out
+        ${open?'translate-x-0':'-translate-x-full'}
+      `}>
+        <div className="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-95 backdrop-blur-lg"></div>
+        <div className="relative flex flex-col items-center pt-20 space-y-6">
+          {linksToShow.map((link,i)=>{
+            const baseMob = link.primary
+              ? 'text-lg font-medium bg-blue-600 text-white px-4 py-2 rounded transition'
+              : `text-lg font-medium transition ${mobileColor}`;
+            const isActive =
+              (link.type==='anchor' && activeSection===link.to.slice(1))
+              || (link.type==='link' && pathname===link.to);
+            const activeCls = isActive
+              ? ' text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400'
+              : '';
+            if (link.type==='anchor') {
               return (
                 <a
-                  key={idx}
+                  key={i}
                   href={link.to}
-                  onClick={(e) => handleScrollTo(e, id)}
-                  className={base}
+                  onClick={(e)=>handleScrollTo(e,link.to.slice(1))}
+                  className={baseMob+activeCls}
                 >
                   {link.label}
                 </a>
               );
             }
-            if (link.type === 'link') {
-              return (
-                <Link key={idx} to={link.to} className={base}>
-                  {link.label}
-                </Link>
-              );
-            }
-            // logout button
             return (
-              <button
-                key={idx}
-                onClick={() => { localStorage.clear(); window.location.href = '/'; }}
-                className={`${base} ${isLanding ? 'hover:text-red-300' : 'hover:text-red-600'}`}
+              <Link
+                key={i}
+                to={link.to}
+                onClick={()=>setOpen(false)}
+                className={baseMob+activeCls}
               >
                 {link.label}
-              </button>
+              </Link>
             );
           })}
 
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? (
-              <FaSun className="text-yellow-400" />
-            ) : (
-              <FaMoon className="text-gray-800 dark:text-gray-200" />
-            )}
-          </button>
-        </div>
-
-        <div className="flex md:hidden items-center space-x-2">
-          <button
-            className={`p-2 text-2xl transition-colors duration-200 ${iconColor}`}
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <FiX /> : <FiMenu />}
-          </button>
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition"
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? (
-              <FaSun className="text-yellow-400" />
-            ) : (
-              <FaMoon className="text-gray-800 dark:text-gray-200" />
-            )}
-          </button>
+          {/* Mobile profile / auth options */}
+          {!isAuth && (
+            <>
+              <Link
+                to="/login"
+                onClick={()=>setOpen(false)}
+                className="w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                onClick={()=>setOpen(false)}
+                className="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
+          {isAuth && (
+            <>
+              <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+              <Link
+                to="/dashboard"
+                onClick={()=>setOpen(false)}
+                className="w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Profile
+              </Link>
+              <button
+                onClick={()=>{
+                  navigate('/dashboard',{state:{openChangePwd:true}});
+                  setOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Change Password
+              </button>
+              <button
+                onClick={()=>{
+                  localStorage.clear();
+                  window.location.href='/';
+                }}
+                className="w-full px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700"
+              >
+                Logout
+              </button>
+            </>
+          )}
         </div>
       </div>
-
-      {open && (
-        <div
-          className={`
-            md:hidden px-6 pb-4 space-y-4 border-t border-gray-200 dark:border-gray-700
-            ${isLanding ? 'bg-gray-800 bg-opacity-90' : 'bg-white dark:bg-gray-800'}
-          `}
-        >
-          {linksToShow.map((link, idx) => {
-            if (link.type === 'anchor') {
-              const id = link.to.replace('#', '');
-              return (
-                <a
-                  key={idx}
-                  href={link.to}
-                  onClick={(e) => handleScrollTo(e, id)}
-                  className={`block text-lg ${mobileColor}`}
-                >
-                  {link.label}
-                </a>
-              );
-            }
-            if (link.type === 'link') {
-              return (
-                <Link key={idx} to={link.to} className={`block text-lg ${mobileColor}`}>
-                  {link.label}
-                </Link>
-              );
-            }
-            return (
-              <button
-                key={idx}
-                onClick={() => { localStorage.clear(); window.location.href = '/'; }}
-                className={`block text-lg ${
-                  isLanding ? 'text-red-300 hover:text-red-500' : 'text-red-600 hover:text-red-800'
-                }`}
-              >
-                {link.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </nav>
+    </>
   );
 }
