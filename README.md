@@ -205,4 +205,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-© 2025 Omid Cheraghi (Omidcr77)
+© 2025 Omid Muradi (Omidcr77)

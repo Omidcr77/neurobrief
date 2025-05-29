@@ -1,6 +1,7 @@
 // src/components/About.js
 import React, { useEffect, useContext } from 'react';
 import AOS from 'aos';
+import visionImage from '../assets/vision-image.png'; // Replace with your image path
 import 'aos/dist/aos.css';
 import { ThemeContext } from '../App';
 import { FaRocket, FaLightbulb, FaUsers, FaChartLine } from 'react-icons/fa';
@@ -56,22 +57,17 @@ export default function About() {
             <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-gray-100">
               Transforming Information Consumption
             </h2>
-            <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-              <p>
-                NeuroBrief was founded by Robert Anderson, a passionate AI researcher, 
-                and Maria Sanchez, a visionary educator. Their shared dream was to create 
-                a solution for information overload in our digital age.
-              </p>
-              <p>
-                United by their belief in the power of AI to enhance human cognition, 
-                they gathered experts in natural language processing and launched an 
-                innovative platform that transforms how we consume information.
-              </p>
-              <p>
-                Today, NeuroBrief connects a global community of professionals, students, 
-                and lifelong learners who value efficiency without compromising understanding.
-              </p>
-            </div>
+<div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+  <p>
+    NeuroBrief was born in the computer labs of Balkh University, created by a passionate team of Computer Science students who saw firsthand how information overload affects learners. Our journey began during late-night coding sessions fueled by chai and a shared vision.
+  </p>
+  <p>
+    As students ourselves, we understood the struggle of balancing coursework, research, and personal growth. We combined our expertise in AI, natural language processing, and human-centered design to build a solution that helps students and professionals cut through the noise.
+  </p>
+  <p>
+    Today, NeuroBrief represents our commitment to making knowledge accessible across Afghanistan and beyond. Every algorithm is crafted with care by our Balkh-based team, proving that great innovation can come from anywhere when passionate minds collaborate.
+  </p>
+</div>
           </div>
 
           {/* Image + Stats */}
@@ -99,23 +95,28 @@ export default function About() {
               ))}
             </div>
             
-            {/* Image Card */}
-            <div
-              data-aos="fade-left"
-              data-aos-delay="150"
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-2xl overflow-hidden shadow-lg"
-            >
-              <div className="p-6 text-white">
-                <h3 className="text-xl font-bold mb-2">Our Vision</h3>
-                <p className="opacity-90">
-                  To create a world where knowledge is accessible, digestible, and 
-                  actionable for everyone, regardless of time constraints.
-                </p>
-              </div>
-              <div className="aspect-w-16 aspect-h-9">
-                <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-48" />
-              </div>
-            </div>
+           {/* Image Card */}
+<div
+  data-aos="fade-left"
+  data-aos-delay="150"
+  className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 rounded-2xl overflow-hidden shadow-lg"
+>
+  <div className="p-6 text-white">
+    <h3 className="text-xl font-bold mb-2">Our Vision</h3>
+    <p className="opacity-90">
+      To create a world where knowledge is accessible, digestible, and 
+      actionable for everyone, regardless of time constraints.
+    </p>
+  </div>
+  {/* Replace with your image */}
+  <div className="aspect-w-16 aspect-h-9">
+   <img 
+  src={visionImage} 
+  alt="NeuroBrief vision" 
+  className="w-full h-full object-cover"
+/>
+  </div>
+</div>
           </div>
         </div>
 
