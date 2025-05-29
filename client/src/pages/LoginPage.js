@@ -102,9 +102,13 @@ export default function LoginPage() {
           transition={{ duration: 0.5 }}
           className="relative z-10 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8"
         >
-          <h2 className="text-2xl font-extrabold text-center text-indigo-600 dark:text-indigo-300 mb-6">
-            Welcome Back
-          </h2>
+          <h2
+  className="text-2xl font-extrabold text-center text-indigo-600 dark:text-indigo-300 mb-6 fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900"
+  style={{ padding: '1rem' }}
+>
+  Welcome Back
+</h2>
+
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}

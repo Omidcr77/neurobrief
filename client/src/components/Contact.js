@@ -30,12 +30,25 @@ export default function Contact() {
   const handleChange = e =>
     setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    // fake network delay
-    await new Promise(r => setTimeout(r, 1000));
-    setIsModalOpen(true);
-  };
+const handleSubmit = e => {
+  e.preventDefault();
+
+  const { name, email, message } = formData;
+
+  const subject = encodeURIComponent(`Contact Form Message from ${name}`);
+
+  const body = encodeURIComponent(
+    `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+  );
+
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=omid.root1@gmail.com&su=${subject}&body=${body}`;
+
+  // Open Gmail compose in a new tab
+  window.open(gmailUrl, '_blank');
+};
+
+
+
 
   const closeModal = () => {
     setIsModalOpen(false);
