@@ -35,7 +35,7 @@ export default function Hero() {
     <section
       id="hero"
       data-aos="fade-up"
-      className="relative h-screen flex items-center justify-center text-center text-white overflow-hidden"
+      className="relative min-h-screen flex items-center justify-center text-center overflow-hidden"
       style={{
         backgroundImage: `url(${bgUrl})`,
         backgroundSize: 'cover',
@@ -43,18 +43,22 @@ export default function Hero() {
         backgroundAttachment: 'fixed',
       }}
     >
-      {/* gradient overlay */}
-      <div className="absolute inset-0 bg-black/40 dark:bg-gray-900/60 transition-colors duration-500" />
+      {/* Gradient overlay - matches dashboard gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-100/70 to-blue-100/70 dark:from-gray-900/70 dark:to-blue-900/70" />
+      
+      {/* Glowing accent */}
+      <div className="absolute top-1/3 -left-24 w-72 h-72 bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-3xl" />
+      <div className="absolute top-1/2 -right-24 w-72 h-72 bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-3xl" />
 
       {/* content */}
-      <div className="relative z-10 max-w-3xl px-6 space-y-6">
+      <div className="relative z-10 max-w-4xl px-6 space-y-8 py-16">
         <h1
           data-aos="fade-down"
           data-aos-delay="200"
-          className="text-4xl md:text-6xl font-extrabold"
+          className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight"
         >
           Welcome to{' '}
-          <span className="text-blue-400 dark:text-blue-300">
+          <span className="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
             NeuroBrief
           </span>
         </h1>
@@ -62,13 +66,10 @@ export default function Hero() {
         <p
           data-aos="fade-up"
           data-aos-delay="400"
-          className="text-lg md:text-2xl"
+          className="text-xl md:text-2xl max-w-2xl mx-auto text-gray-800 dark:text-gray-200"
         >
-          Your{' '}
-          <span className="font-semibold text-blue-300 dark:text-blue-400">
-            AI-powered
-          </span>{' '}
-          news summarizer — get concise updates in seconds.
+          Your <span className="font-semibold text-blue-600 dark:text-blue-400">AI-powered</span> news summarizer — 
+          get concise updates in seconds.
         </p>
 
         <div
@@ -79,12 +80,12 @@ export default function Hero() {
           <Link
             to="/register"
             className="
-              px-6 py-3 
-              bg-blue-600 hover:bg-blue-700 
-              rounded-lg
-              focus:outline-none focus:ring-4 focus:ring-blue-300
-              dark:focus:ring-blue-600
-              transition
+              px-8 py-3.5 rounded-lg text-lg font-semibold 
+              bg-gradient-to-r from-blue-600 to-indigo-700 text-white 
+              hover:from-blue-700 hover:to-indigo-800 
+              focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 
+              transition-all transform hover:scale-[1.03] active:scale-[0.97] 
+              duration-200 ease-in-out shadow-lg hover:shadow-xl
             "
           >
             Get Started
@@ -92,12 +93,12 @@ export default function Hero() {
           <button
             onClick={() => scrollTo('about')}
             className="
-              px-6 py-3
-              bg-white/80 text-gray-900 hover:bg-white/90
-              rounded-lg
-              focus:outline-none focus:ring-4 focus:ring-gray-200
-              dark:focus:ring-gray-600
-              transition
+              px-8 py-3.5 rounded-lg text-lg font-semibold 
+              text-gray-800 dark:text-gray-200 bg-white/90 dark:bg-gray-800/90
+              hover:bg-white dark:hover:bg-gray-700
+              focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-600
+              transition-all transform hover:scale-[1.03] active:scale-[0.97] 
+              duration-200 ease-in-out shadow-lg hover:shadow-xl
             "
           >
             Learn More
@@ -109,28 +110,26 @@ export default function Hero() {
       <button
         onClick={() => scrollTo('about')}
         className="
-          absolute bottom-8 z-10 
-          animate-bounce p-2 
-          bg-white/30 backdrop-blur-sm 
-          hover:bg-white/50 
+          absolute bottom-10 z-10 
+          animate-bounce p-3 
+          bg-white/80 backdrop-blur-sm dark:bg-gray-800/80
+          hover:bg-white dark:hover:bg-gray-700
           rounded-full
-          transition
+          transition-all shadow-lg
         "
         aria-label="Scroll down"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-6 h-6 text-gray-900 dark:text-gray-100"
+          className="w-6 h-6 text-blue-600 dark:text-blue-400"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          strokeWidth={2}
+          strokeWidth={3}
         >
-          <path d="M19 9l-7 7-7-7" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-
-      {/* — bottom wave has been removed per your request — */}
     </section>
   );
 }

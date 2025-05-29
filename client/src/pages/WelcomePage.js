@@ -13,7 +13,7 @@ export default function WelcomePage() {
   }, []);
 
   return (
-    <div className="overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div className="overflow-hidden bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-blue-900 transition-colors duration-300">
       <Hero />
       <About />
       <Services />

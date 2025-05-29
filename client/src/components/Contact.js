@@ -1,18 +1,17 @@
-// src/components/Contact.js
 import React, { useState, useContext, useEffect } from 'react';
 import Modal from 'react-modal';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import {
-  FaGithub,
-  FaFacebookF,
   FaEnvelope,
   FaWhatsapp,
   FaCheckCircle,
-  FaPaperPlane
+  FaPaperPlane,
+  FaComments,
+  FaHeadset,
+  FaQuestionCircle
 } from 'react-icons/fa';
 import { ThemeContext } from '../App';
-import circuitBg from '../assets/circuit-board.png';
 
 Modal.setAppElement('#root');
 
@@ -30,25 +29,10 @@ export default function Contact() {
   const handleChange = e =>
     setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
-const handleSubmit = e => {
-  e.preventDefault();
-
-  const { name, email, message } = formData;
-
-  const subject = encodeURIComponent(`Contact Form Message from ${name}`);
-
-  const body = encodeURIComponent(
-    `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
-  );
-
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=omid.root1@gmail.com&su=${subject}&body=${body}`;
-
-  // Open Gmail compose in a new tab
-  window.open(gmailUrl, '_blank');
-};
-
-
-
+  const handleSubmit = e => {
+    e.preventDefault();
+    setIsModalOpen(true);
+  };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -56,267 +40,303 @@ const handleSubmit = e => {
   };
 
   return (
-    <section id="contact" className="relative py-20 overflow-hidden">
-      {/* 1) Circuit-board bg */}
-      <div
-        className="absolute inset-0 bg-fixed bg-cover mix-blend-overlay"
-        style={{ backgroundImage: `url(${circuitBg})` }}
-      />
-      {/* 2) Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 opacity-90" />
+    <section 
+      id="contact" 
+      className="
+        relative py-20 overflow-hidden
+        bg-gradient-to-br from-gray-100 to-blue-100
+        dark:from-gray-900 dark:to-blue-900
+      "
+    >
+      {/* Glowing accents */}
+      <div className="absolute top-1/4 -left-24 w-72 h-72 bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-1/3 -right-24 w-72 h-72 bg-indigo-400/20 dark:bg-indigo-600/20 rounded-full blur-3xl" />
 
-      {/* 3) Top wave */}
-      <div className="absolute top-0 left-0 w-full overflow-hidden leading-none rotate-180">
-        <svg
-          viewBox="0 0 1200 100"
-          preserveAspectRatio="none"
-          className="w-full h-20"
-          aria-hidden="true"
-        >
-          <path
-            d="M0,0 C400,100 800,0 1200,100 L1200,00 L0,0 Z"
-            className="fill-white dark:fill-gray-900"
-          />
-        </svg>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 
+            className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-4"
+            data-aos="fade-down"
+          >
+            Contact <span className="text-blue-600 dark:text-blue-400">Us</span>
+          </h2>
+          <p 
+            className="text-xl max-w-3xl mx-auto text-gray-600 dark:text-gray-300"
+            data-aos="fade-up"
+            data-aos-delay="100"
+          >
+            Have questions? We're here to help
+          </p>
+        </div>
 
-      <div className="relative z-10 container mx-auto px-4">
-        <div className="flex flex-col md:flex-row md:space-x-8 space-y-12 md:space-y-0">
-          {/* How It Works */}
-          <div className="md:w-1/2 space-y-6">
-            <h3
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Contact Information */}
+          <div className="space-y-8">
+            <div 
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8"
               data-aos="fade-right"
               data-aos-delay="100"
-              className="text-3xl font-semibold text-gray-800 dark:text-gray-200"
             >
-              How It Works
-            </h3>
-            <ol className="list-decimal list-inside space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-              <li data-aos="fade-right" data-aos-delay="200">
-                Go to the <strong>Summarize</strong> page.
-              </li>
-              <li data-aos="fade-right" data-aos-delay="300">
-                Paste your text or upload a document.
-              </li>
-              <li data-aos="fade-right" data-aos-delay="400">
-                Choose <em>Extractive</em> or <em>Abstractive</em>.
-              </li>
-              <li data-aos="fade-right" data-aos-delay="500">
-                Adjust any optional settings.
-              </li>
-              <li data-aos="fade-right" data-aos-delay="600">
-                Click <strong>Summarize</strong> and wait.
-              </li>
-              <li data-aos="fade-right" data-aos-delay="700">
-                Review, copy, download, or save your summary.
-              </li>
-            </ol>
-            <p
-              data-aos="fade-right"
-              data-aos-delay="800"
-              className="mt-4 text-sm italic text-gray-600 dark:text-gray-400"
-            >
-              Tip: We’ll email you a copy shortly after as well.
-            </p>
-          </div>
-
-          {/* Contact Form */}
-          <div className="md:w-1/2">
-            <div
-              data-aos="fade-left"
-              data-aos-delay="100"
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 lg:p-8 transition-colors duration-300"
-            >
-              <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600 dark:text-indigo-300">
-                Get in Touch
-              </h2>
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Name */}
-                <div
-                  data-aos="fade-left"
-                  data-aos-delay="200"
-                  className="relative"
-                >
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    required
-                    placeholder=" "
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="
-                      peer w-full px-4 py-3 border-2 rounded-lg
-                      border-indigo-300 dark:border-indigo-600
-                      bg-gray-50 dark:bg-gray-700
-                      focus:outline-none focus:ring-2 focus:ring-indigo-400
-                      transition
-                    "
-                  />
-                  <label
-                    htmlFor="name"
-                    className="
-                      absolute left-4 top-3 pointer-events-none
-                      peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
-                      peer-focus:-top-3 peer-focus:text-sm
-                      text-gray-500 dark:text-gray-400
-                      transition-all
-                    "
-                  >
-                    Name
-                  </label>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                <FaComments className="text-blue-500 mr-3" />
+                Get In Touch
+              </h3>
+              
+              <div className="space-y-6">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-blue-100 dark:bg-blue-900/30 rounded-lg p-3">
+                    <FaEnvelope className="text-blue-600 dark:text-blue-400 text-xl" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">Email</h4>
+                    <a 
+                      href="mailto:support@neurobrief.ai" 
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                    >
+                      support@neurobrief.ai
+                    </a>
+                  </div>
                 </div>
-
-                {/* Email */}
-                <div
-                  data-aos="fade-left"
-                  data-aos-delay="300"
-                  className="relative"
-                >
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    required
-                    placeholder=" "
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="
-                      peer w-full px-4 py-3 border-2 rounded-lg
-                      border-teal-300 dark:border-teal-600
-                      bg-gray-50 dark:bg-gray-700
-                      focus:outline-none focus:ring-2 focus:ring-teal-400
-                      transition
-                    "
-                  />
-                  <label
-                    htmlFor="email"
-                    className="
-                      absolute left-4 top-3 pointer-events-none
-                      peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
-                      peer-focus:-top-3 peer-focus:text-sm
-                      text-gray-500 dark:text-gray-400
-                      transition-all
-                    "
-                  >
-                    Email
-                  </label>
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-green-100 dark:bg-green-900/30 rounded-lg p-3">
+                    <FaWhatsapp className="text-green-600 dark:text-green-400 text-xl" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">WhatsApp</h4>
+                    <a 
+                      href="https://wa.me/+93786051709" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green-600 dark:text-green-400 hover:underline"
+                    >
+                      +93786051709
+                    </a>
+                  </div>
                 </div>
-
-                {/* Message */}
-                <div
-                  data-aos="fade-left"
-                  data-aos-delay="400"
-                  className="relative"
-                >
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows="4"
-                    required
-                    placeholder=" "
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="
-                      peer w-full px-4 py-3 border-2 rounded-lg
-                      border-purple-300 dark:border-purple-600
-                      bg-gray-50 dark:bg-gray-700
-                      focus:outline-none focus:ring-2 focus:ring-purple-400
-                      transition
-                    "
-                  />
-                  <label
-                    htmlFor="message"
-                    className="
-                      absolute left-4 top-3 pointer-events-none
-                      peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
-                      peer-focus:-top-3 peer-focus:text-sm
-                      text-gray-500 dark:text-gray-400
-                      transition-all
-                    "
-                  >
-                    Message
-                  </label>
-                </div>
-
-                {/* Send button */}
-                <button
-                  type="submit"
-                  data-aos="zoom-in"
-                  data-aos-delay="500"
-                  className="
-                    w-full flex items-center justify-center gap-2 py-3 font-semibold rounded-lg
-                    bg-gradient-to-r from-blue-500 to-indigo-600
-                    text-white hover:opacity-90 hover:scale-105
-                    transition
-                  "
-                >
-                  <FaPaperPlane /> Send Message
-                </button>
-              </form>
-
-              {/* Social + “Contact Us” */}
-              <div
-                data-aos="fade-up"
-                data-aos-delay="600"
-                className="flex items-center justify-between mt-8"
-              >
-                <div className="flex space-x-4">
-                  <a
-                    href="https://github.com/omidcr77"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-2xl text-gray-600 dark:text-gray-300 hover:text-indigo-500 transform hover:scale-110 transition"
-                  >
-                    <FaGithub />
-                  </a>
-                  <a
-                    href="https://www.facebook.com/omid.ps2"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-2xl text-gray-600 dark:text-gray-300 hover:text-indigo-500 transform hover:scale-110 transition"
-                  >
-                    <FaFacebookF />
-                  </a>
-                  <a
-                    href="mailto:omid.root1@gmail.com"
-                    className="text-2xl text-gray-600 dark:text-gray-300 hover:text-indigo-500 transform hover:scale-110 transition"
-                  >
-                    <FaEnvelope />
-                  </a>
-                  <a
-                    href="https://wa.me/+93786051709"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-2xl text-gray-600 dark:text-gray-300 hover:text-indigo-500 transform hover:scale-110 transition"
-                  >
-                    <FaWhatsapp />
-                  </a>
-                </div>
-                <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Contact Us
+                
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg p-3">
+                    <FaHeadset className="text-indigo-600 dark:text-indigo-400 text-xl" />
+                  </div>
+                  <div className="ml-4">
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">Support Hours</h4>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      Monday-Friday: 9am-5pm (GMT)
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
+            
+            <div 
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8"
+              data-aos="fade-right"
+              data-aos-delay="200"
+            >
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                <FaQuestionCircle className="text-indigo-500 mr-3" />
+                Frequently Asked Questions
+              </h3>
+              
+              <div className="space-y-6">
+                {[
+                  {
+                    question: "How long does summarization take?",
+                    answer: "Most summaries are generated in under 10 seconds, even for longer documents."
+                  },
+                  {
+                    question: "Is there a file size limit?",
+                    answer: "PDFs up to 10MB and text content up to 50,000 characters are supported."
+                  },
+                  {
+                    question: "Can I summarize multiple documents?",
+                    answer: "Yes, our premium plans allow batch processing of multiple documents."
+                  }
+                ].map((faq, index) => (
+                  <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{faq.question}</h4>
+                    <p className="mt-1 text-gray-600 dark:text-gray-300">{faq.answer}</p>
+                  </div>
+                ))}
+                
+                <a 
+                  href="/faq" 
+                  className="
+                    inline-flex items-center text-blue-600 dark:text-blue-400
+                    hover:text-blue-800 dark:hover:text-blue-300
+                    font-medium
+                  "
+                >
+                  View all FAQs
+                  <svg className="ml-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          {/* Contact Form */}
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8"
+            data-aos="fade-left"
+            data-aos-delay="100"
+          >
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+              Send us a message
+            </h3>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Name */}
+              <div className="relative">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder=" "
+                  className="
+                    w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    peer
+                  "
+                />
+                <label
+                  htmlFor="name"
+                  className="
+                    absolute left-4 top-3.5 text-gray-500 dark:text-gray-400
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-400
+                    peer-focus:top-0 peer-focus:bg-white dark:peer-focus:bg-gray-800
+                    peer-focus:px-1 peer-focus:text-sm
+                    transition-all duration-200 pointer-events-none
+                  "
+                >
+                  Full Name
+                </label>
+              </div>
+              
+              {/* Email */}
+              <div className="relative">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder=" "
+                  className="
+                    w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    peer
+                  "
+                />
+                <label
+                  htmlFor="email"
+                  className="
+                    absolute left-4 top-3.5 text-gray-500 dark:text-gray-400
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-400
+                    peer-focus:top-0 peer-focus:bg-white dark:peer-focus:bg-gray-800
+                    peer-focus:px-1 peer-focus:text-sm
+                    transition-all duration-200 pointer-events-none
+                  "
+                >
+                  Email Address
+                </label>
+              </div>
+              
+              {/* Message */}
+              <div className="relative">
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  required
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder=" "
+                  className="
+                    w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm
+                    dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                    peer
+                  "
+                />
+                <label
+                  htmlFor="message"
+                  className="
+                    absolute left-4 top-3.5 text-gray-500 dark:text-gray-400
+                    peer-focus:text-blue-600 dark:peer-focus:text-blue-400
+                    peer-focus:top-0 peer-focus:bg-white dark:peer-focus:bg-gray-800
+                    peer-focus:px-1 peer-focus:text-sm
+                    transition-all duration-200 pointer-events-none
+                  "
+                >
+                  Your Message
+                </label>
+              </div>
+              
+              {/* Submit button */}
+              <button
+                type="submit"
+                className="
+                  w-full flex items-center justify-center gap-2 py-3.5 font-semibold rounded-xl
+                  bg-gradient-to-r from-blue-600 to-indigo-700
+                  text-white hover:from-blue-700 hover:to-indigo-800
+                  focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 
+                  transition-all transform hover:scale-[1.02] active:scale-[0.98] 
+                  duration-200 ease-in-out shadow-lg hover:shadow-xl
+                "
+              >
+                <FaPaperPlane className="mr-2" />
+                Send Message
+              </button>
+            </form>
           </div>
         </div>
       </div>
 
-      {/* 4) Confirmation Modal */}
+      {/* Confirmation Modal */}
       <Modal
         isOpen={isModalOpen}
         onRequestClose={closeModal}
         contentLabel="Thank You"
-        className="p-6 bg-white rounded-lg max-w-sm mx-auto mt-24 outline-none"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        className="
+          p-0 border-none bg-transparent max-w-md mx-auto mt-24
+          flex items-center justify-center
+        "
+        overlayClassName="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center"
       >
-        <div className="text-center space-y-4">
-          <FaCheckCircle className="text-green-500 text-4xl mx-auto" />
-          <h3 className="text-xl font-semibold">Thanks, your message is on its way!</h3>
+        <div 
+          className="
+            bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center
+            transform transition-all duration-300 scale-95
+            animate-fade-in
+          "
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-6">
+            <FaCheckCircle className="text-green-500 text-3xl" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Message Sent!
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
+            Thank you for contacting us. We'll get back to you within 24 hours.
+          </p>
           <button
             onClick={closeModal}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className="
+              px-8 py-3 rounded-xl font-medium
+              bg-blue-600 text-white
+              hover:bg-blue-700
+              focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 
+              transition-all
+            "
           >
             Close
           </button>

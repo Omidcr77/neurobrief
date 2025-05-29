@@ -18,6 +18,7 @@ import {
   FaMoon,
   FaSun,
   FaUserCircle,
+  FaSignOutAlt,
 } from 'react-icons/fa';
 import api from '../api';
 import { ThemeContext } from '../App';
@@ -95,7 +96,7 @@ export default function NavBar() {
   // link colors based on theme / landing vs inner
   const landingTextColor =
     theme === 'dark'
-      ? 'text-white hover:text-blue-200'
+      ? 'text-white hover:text-blue-300'
       : 'text-gray-800 hover:text-blue-600';
   const linkColor = isLanding
     ? landingTextColor
@@ -145,10 +146,10 @@ export default function NavBar() {
     }
     let cls = base;
     if (link.primary) {
-      cls += ' bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded transition';
+      cls += ' bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800 px-4 py-2 rounded-lg transition-all transform hover:scale-[1.03] shadow-md';
     }
     if (isActive) {
-      cls += ' text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400';
+      cls += ' text-blue-600 dark:text-blue-400 font-semibold';
     }
     return cls;
   };
@@ -176,7 +177,7 @@ export default function NavBar() {
         className={`
           fixed top-0 w-full z-50 transition-colors duration-300
           ${isLanding
-            ? 'bg-white bg-opacity-20 backdrop-blur-lg border-transparent'
+            ? 'bg-gradient-to-br from-gray-100/80 to-blue-100/80 dark:from-gray-900/80 dark:to-blue-900/80 backdrop-blur-lg border-transparent'
             : 'bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700'}
         `}
       >
@@ -228,9 +229,10 @@ export default function NavBar() {
                 <button
                   onClick={()=>setAvatarMenuOpen(o=>!o)}
                   className="
-                    w-10 h-10 rounded-full bg-indigo-600 text-white
+                    w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white
                     flex items-center justify-center
                     focus:outline-none focus:ring-2 focus:ring-indigo-400
+                    shadow-md hover:shadow-lg transition-all
                   "
                   aria-haspopup="true"
                   aria-expanded={avatarMenuOpen}
@@ -243,16 +245,18 @@ export default function NavBar() {
                   <div className="
                     absolute right-0 mt-2 w-48
                     bg-white dark:bg-gray-800
-                    rounded-md shadow-lg py-1 z-50
+                    rounded-xl shadow-lg py-2 z-50 overflow-hidden
+                    border border-gray-200 dark:border-gray-700
                   ">
                     <Link
                       to="/dashboard"
                       className="
-                        block px-4 py-2 text-gray-700 dark:text-gray-200
-                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        flex items-center px-4 py-3 text-gray-700 dark:text-gray-200
+                        hover:bg-gray-100 dark:hover:bg-gray-700 transition
                       "
                       onClick={()=>setAvatarMenuOpen(false)}
                     >
+                      <FaUserCircle className="mr-3 text-blue-500" />
                       Profile
                     </Link>
                     <button
@@ -261,24 +265,27 @@ export default function NavBar() {
                         setAvatarMenuOpen(false);
                       }}
                       className="
-                        w-full text-left px-4 py-2
+                        w-full text-left flex items-center px-4 py-3
                         text-gray-700 dark:text-gray-200
-                        hover:bg-gray-100 dark:hover:bg-gray-700
+                        hover:bg-gray-100 dark:hover:bg-gray-700 transition
                       "
                     >
+                      <FaUserCircle className="mr-3 text-blue-500" />
                       Change Password
                     </button>
+                    <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
                     <button
                       onClick={()=>{
                         localStorage.clear();
                         window.location.href='/';
                       }}
                       className="
-                        w-full text-left px-4 py-2
+                        w-full text-left flex items-center px-4 py-3
                         text-red-600 hover:bg-red-50
-                        dark:text-red-400 dark:hover:bg-gray-700
+                        dark:text-red-400 dark:hover:bg-gray-700 transition
                       "
                     >
+                      <FaSignOutAlt className="mr-3" />
                       Logout
                     </button>
                   </div>
@@ -313,17 +320,17 @@ export default function NavBar() {
         transition-transform duration-300 ease-in-out
         ${open?'translate-x-0':'-translate-x-full'}
       `}>
-        <div className="absolute inset-0 bg-white dark:bg-gray-800 bg-opacity-95 backdrop-blur-lg"></div>
-        <div className="relative flex flex-col items-center pt-20 space-y-6">
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-blue-900"></div>
+        <div className="relative flex flex-col items-center pt-24 space-y-4">
           {linksToShow.map((link,i)=>{
             const baseMob = link.primary
-              ? 'text-lg font-medium bg-blue-600 text-white px-4 py-2 rounded transition'
-              : `text-lg font-medium transition ${mobileColor}`;
+              ? 'w-4/5 text-center py-3 font-medium bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-800 transition-all transform hover:scale-[1.03]'
+              : `w-4/5 text-center py-3 font-medium transition ${mobileColor}`;
             const isActive =
               (link.type==='anchor' && activeSection===link.to.slice(1))
               || (link.type==='link' && pathname===link.to);
             const activeCls = isActive
-              ? ' text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400'
+              ? ' text-blue-600 dark:text-blue-400 font-semibold'
               : '';
             if (link.type==='anchor') {
               return (
@@ -350,31 +357,31 @@ export default function NavBar() {
           })}
 
           {/* Mobile profile / auth options */}
-          {!isAuth && (
+          {!isAuth ? (
             <>
+              <div className="w-4/5 border-t border-gray-300 dark:border-gray-600 my-2"></div>
               <Link
                 to="/login"
                 onClick={()=>setOpen(false)}
-                className="w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="w-4/5 text-center py-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 rounded-lg transition"
               >
                 Login
               </Link>
               <Link
                 to="/register"
                 onClick={()=>setOpen(false)}
-                className="w-full px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                className="w-4/5 text-center py-3 font-medium bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-800 transition-all transform hover:scale-[1.03]"
               >
                 Sign Up
               </Link>
             </>
-          )}
-          {isAuth && (
+          ) : (
             <>
-              <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+              <div className="w-4/5 border-t border-gray-300 dark:border-gray-600 my-2"></div>
               <Link
                 to="/dashboard"
                 onClick={()=>setOpen(false)}
-                className="w-full px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="w-4/5 text-center py-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 rounded-lg transition"
               >
                 Profile
               </Link>
@@ -383,7 +390,7 @@ export default function NavBar() {
                   navigate('/dashboard',{state:{openChangePwd:true}});
                   setOpen(false);
                 }}
-                className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="w-4/5 text-center py-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 rounded-lg transition"
               >
                 Change Password
               </button>
@@ -392,7 +399,7 @@ export default function NavBar() {
                   localStorage.clear();
                   window.location.href='/';
                 }}
-                className="w-full px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-gray-700"
+                className="w-4/5 text-center py-3 font-medium text-red-600 dark:text-red-400 hover:bg-red-100/50 dark:hover:bg-gray-700/50 rounded-lg transition"
               >
                 Logout
               </button>

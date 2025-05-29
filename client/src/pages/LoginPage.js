@@ -8,6 +8,8 @@ import {
   FaSun,
   FaEye,
   FaEyeSlash,
+  FaCheckCircle,
+  FaExclamationTriangle
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
@@ -69,50 +71,53 @@ export default function LoginPage() {
   return (
     <>
       {/* Header */}
-      <header className="fixed top-0 left-0 w-full flex items-center justify-between px-4 h-12 bg-white dark:bg-gray-800 shadow z-20">
+      <header className="fixed top-0 left-0 w-full flex items-center justify-between px-6 h-14 bg-white dark:bg-gray-800 shadow-md z-20">
         <button
           onClick={() => navigate(-1)}
-          className="text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded"
+          className="text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           aria-label="Go back"
         >
-          <FaArrowLeft size={20} />
+          <FaArrowLeft size={18} />
         </button>
-        <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+        <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">
           Login
         </h1>
         <button
           onClick={toggleTheme}
-          className="text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded"
+          className="text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
           aria-label="Toggle theme"
         >
-          {theme === 'dark' ? <FaSun /> : <FaMoon />}
+          {theme === 'dark' ? <FaSun size={18} /> : <FaMoon size={18} />}
         </button>
       </header>
 
       {/* Main */}
-      <section className="relative flex items-center justify-center min-h-screen pt-12 bg-gradient-to-br from-indigo-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden">
-        {/* Decorative blobs */}
-        <div className="absolute top-0 right-0 w-60 h-60 bg-indigo-300 mix-blend-multiply blur-3xl opacity-20 animate-blob dark:bg-indigo-700 dark:opacity-10" />
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-teal-300 mix-blend-multiply blur-2xl opacity-20 animate-blob animation-delay-4000 dark:bg-teal-700 dark:opacity-10" />
-
+      <section className="relative flex items-center justify-center min-h-screen pt-14 bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-blue-900 overflow-hidden">
         {/* Animated Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative z-10 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8"
+          className="relative z-10 w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 mx-4"
         >
-          <h2
-  className="text-2xl font-extrabold text-center text-indigo-600 dark:text-indigo-300 mb-6 fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900"
-  style={{ padding: '1rem' }}
->
-  Welcome Back
-</h2>
-
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-gray-800 dark:text-gray-200">
+              Welcome Back
+            </h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              Sign in to continue to your account
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
-            <div className="relative">
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                Email Address
+              </label>
               <input
                 id="email"
                 type="email"
@@ -121,84 +126,71 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="
-                  peer w-full px-4 py-3 border-2 rounded-lg
-                  border-gray-200 dark:border-gray-600
-                  bg-white dark:bg-gray-700
-                  focus:outline-none focus:ring-2 focus:ring-indigo-400
+                  w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                  bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200
                   transition
                 "
-                placeholder=" "
+                placeholder="your@email.com"
                 aria-invalid={!!error}
                 aria-describedby="email-error"
               />
-              <label
-                htmlFor="email"
-                className="
-                  absolute left-4 top-3 text-gray-500 dark:text-gray-400
-                  peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
-                  peer-focus:-top-2 peer-focus:text-sm peer-focus:text-indigo-600
-                  transition-all
-                "
-              >
-                Email Address
-              </label>
             </div>
 
             {/* Password */}
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="
-                  peer w-full pr-10 px-4 py-3 border-2 rounded-lg
-                  border-gray-200 dark:border-gray-600
-                  bg-white dark:bg-gray-700
-                  focus:outline-none focus:ring-2 focus:ring-indigo-400
-                  transition
-                "
-                placeholder=" "
-                aria-describedby="password-error"
-              />
+            <div className="space-y-2">
               <label
                 htmlFor="password"
-                className="
-                  absolute left-4 top-3 text-gray-500 dark:text-gray-400
-                  peer-placeholder-shown:top-3 peer-placeholder-shown:text-base
-                  peer-focus:-top-2 peer-focus:text-sm peer-focus:text-indigo-600
-                  transition-all
-                "
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 Password
               </label>
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 focus:outline-none"
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="
+                    w-full pr-10 px-4 py-3 border border-gray-300 rounded-lg shadow-sm
+                    focus:outline-none focus:ring-2 focus:ring-blue-500
+                    bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200
+                    transition
+                  "
+                  placeholder="••••••••"
+                  aria-describedby="password-error"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 focus:outline-none"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                </button>
+              </div>
             </div>
 
             {/* Error message */}
-            <div
-              id="email-error"
-              role="alert"
-              aria-live="assertive"
-              className="text-center text-red-600 dark:text-red-400 text-sm h-5"
-            >
-              {error}
-            </div>
+            {error && (
+              <div
+                id="email-error"
+                role="alert"
+                aria-live="assertive"
+                className="flex items-center p-3 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-900 dark:text-red-200"
+              >
+                <FaExclamationTriangle className="mr-2 flex-shrink-0" />
+                {error}
+              </div>
+            )}
 
             {/* Forgot & Submit */}
             <div className="flex items-center justify-between">
               <Link
                 to="/forgot-password"
-                className="text-sm text-indigo-600 dark:text-indigo-300 hover:underline"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 Forgot password?
               </Link>
@@ -206,30 +198,34 @@ export default function LoginPage() {
                 type="submit"
                 disabled={loading}
                 className="
-                  flex items-center gap-2 px-6 py-3 font-semibold rounded-lg
-                  bg-gradient-to-r from-blue-500 to-indigo-600
-                  text-white hover:scale-105 active:scale-95
-                  disabled:opacity-50 disabled:cursor-not-allowed
-                  focus:outline-none focus:ring-2 focus:ring-indigo-400
-                  transition
+                  inline-flex items-center justify-center px-6 py-3 text-sm font-medium
+                  bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg
+                  hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-4
+                  focus:ring-blue-300 dark:focus:ring-blue-800 transition-all transform
+                  hover:scale-[1.03] active:scale-[0.97] duration-200 ease-in-out shadow-md
+                  hover:shadow-lg disabled:opacity-70
                 "
               >
-                {loading && <FaSpinner className="animate-spin" />}
+                {loading ? (
+                  <FaSpinner className="animate-spin mr-2" />
+                ) : null}
                 {loading ? 'Logging in…' : 'Login'}
               </button>
             </div>
           </form>
 
           {/* Signup link */}
-          <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
-            Don’t have an account?{' '}
-            <Link
-              to="/register"
-              className="text-indigo-600 dark:text-indigo-300 hover:underline"
-            >
-              Create one
-            </Link>
-          </p>
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+              Don’t have an account?{' '}
+              <Link
+                to="/register"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                Create one
+              </Link>
+            </p>
+          </div>
         </motion.div>
       </section>
 
@@ -242,8 +238,7 @@ export default function LoginPage() {
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
             className="
-              fixed bottom-4 right-4 bg-gray-800 text-white
-              px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 z-30
+              fixed bottom-6 right-6 z-[100] flex items-center space-x-3 px-5 py-3 rounded-xl shadow-2xl text-white bg-blue-500
             "
             role="alert"
             aria-live="polite"
@@ -254,7 +249,7 @@ export default function LoginPage() {
                 setShowToast(false);
                 navigate('/');
               }}
-              className="underline"
+              className="underline font-medium"
             >
               Go home
             </button>
