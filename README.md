@@ -1,103 +1,73 @@
-# NeuroBrief
+# NeuroBrief 🧠📄
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](#)
+[![OpenAI Powered](https://img.shields.io/badge/Powered%20by-OpenAI-412991.svg?logo=openai)](https://openai.com)
+[![React Version](https://img.shields.io/badge/React-v19-61DAFB.svg?logo=react)](https://react.dev)
+[![Node Version](https://img.shields.io/badge/Node.js-v18+-339933.svg?logo=nodedotjs)](https://nodejs.org)
 
-AI-Powered Text Summarizer Web Platform
+AI-Powered Text Summarization Platform
 
-NeuroBrief empowers users to transform lengthy text, PDFs, or web articles into concise, insight-rich summaries using state-of-the-art GPT models. Whether you need a quick overview, detailed breakdown, or bullet-point highlights, NeuroBrief delivers.
-
----
-
-## Table of Contents
-
-- [Key Features](#key-features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Clone & Installation](#clone--installation)
-  - [Configuration](#configuration)
-  - [Running the App](#running-the-app)
-- [Usage](#usage)
-  - [API Endpoints](#api-endpoints)
-  - [Client UI Overview](#client-ui-overview)
-- [Testing](#testing)
-- [Deployment](#deployment)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
+NeuroBrief transforms lengthy text, PDFs, or web articles into concise, insight-rich summaries using GPT-4.1. Get quick overviews, detailed breakdowns, or bullet-point highlights tailored to your needs.
 
 ---
 
-## Key Features
+## ✨ Key Features
 
-- **Multi-Modal Input**: Summarize raw text, upload PDFs, or fetch & summarize articles via URL.
-- **Flexible Summarization Options**:
-  - **Length**: `short` (≤50 words), `medium` (~100 words), `detailed` (≥200 words).
-  - **Style**: `abstractive`, `extractive` (quote key sentences), or `bullets`.
-  - **Focus**: Specify topics or sections to emphasize.
-- **User Authentication & Profiles**:
-  - Secure JWT-based sign up, login, and session management.
-  - Passwords hashed via bcrypt.
-- **History & Export**:
-  - View, search, and delete past summaries in your dashboard.
-  - Download results as `.txt`, `.pdf` (via jsPDF), or export CSV/Excel.
-- **Admin Dashboard**:
-  - **User Management**: List, filter, update, deactivate/delete users, impersonate accounts.
-  - **Reports & Metrics**: Real-time metrics (user & summary counts), daily registrations, summary trends, and CSV/Excel exports.
-- **Responsive & Interactive UI**:
-  - Built with React (v19), Tailwind v3, Headless UI, Framer Motion, AOS.
-  - Charts & graphs powered by Chart.js & Recharts.
-  - Markdown rendering via React Markdown + GFM support.
-  - Accessible modals and routing (React Router v7).
-- **Robust Backend**:
-  - Node & Express v5, MongoDB (via Mongoose).
-  - PDF parsing (`pdf-parse`), article extraction (Mozilla Readability & JSDOM).
-  - CORS, file uploads (Multer), and secure environment management.
+| Feature | Icon | Description |
+|---------|------|-------------|
+| **Multi-Modal Input** | 📥 | Summarize text, PDFs, or web articles via URL |
+| **Flexible Summarization** | ⚙️ | Customize length, style (abstractive/extractive/bullets), and focus areas |
+| **User Authentication** | 🔒 | JWT-based auth with password hashing via bcrypt |
+| **History & Export** | 📊 | View/search past summaries • Export as TXT/PDF/CSV |
+| **Admin Dashboard** | 👑 | User management • Impersonation • Real-time metrics |
+| **Responsive UI** | 📱 | Interactive React UI with animations & visualizations |
 
 ---
 
-## Tech Stack
+## 🛠 Tech Stack
 
-- **Frontend**: React · Tailwind CSS · Headless UI · Framer Motion · AOS · React Router
-- **Backend**: Node.js · Express · MongoDB · Mongoose · JWT · bcrypt · Multer
-- **AI & NLP**: OpenAI GPT-4.1 · `openai` SDK · Mozilla Readability · `pdf-parse`
-- **Visualizations**: Chart.js · Recharts · jsPDF · React Markdown
-- **Utilities**: Axios · CORS · dotenv
-- **Testing**: Jest · Supertest · React Testing Library
+**Frontend**  
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react) 
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?logo=tailwind-css)
+![React Router](https://img.shields.io/badge/React_Router-7-CA4245?logo=react-router)
+
+**Backend**  
+![Node.js](https://img.shields.io/badge/Node.js-18+-339933?logo=nodedotjs) 
+![Express](https://img.shields.io/badge/Express-5-000000?logo=express)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb)
+
+**AI Processing**  
+![OpenAI](https://img.shields.io/badge/GPT_4.1-412991?logo=openai) 
+![PDF Parse](https://img.shields.io/badge/PDF_Parse-FF6B6B)
+
+**Visualization**  
+![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?logo=chartdotjs) 
+![Recharts](https://img.shields.io/badge/Recharts-00CED1)
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js v18+ & npm
+- Node.js v18+
 - MongoDB (local or Atlas)
-- OpenAI API key
-- (Optional) Cloudinary account for PDF storage
+- [OpenAI API Key](https://platform.openai.com/)
+- (Optional) Cloudinary account
 
-### Clone & Installation
-
+### Installation
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/Omidcr77/neurobrief.git
 cd neurobrief
-```
 
-#### Backend Setup
-```bash
+# Backend setup
 cd server
 npm install
 cp .env.example .env
-```
 
-#### Frontend Setup
-```bash
+# Frontend setup
 cd ../client
 npm install
-```
-
 ### Configuration
 
 Create environment files:
