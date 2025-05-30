@@ -2,6 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import Modal from 'react-modal';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import emailjs from '@emailjs/browser';
 import {
   FaEnvelope,
   FaWhatsapp,
@@ -29,10 +30,27 @@ export default function Contact() {
   const handleChange = e =>
     setFormData(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    setIsModalOpen(true);
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Replace with your EmailJS credentials
+  const serviceID = 'service_gojefjl';
+  const templateID = 'template_fv3epbh';
+  const publicKey = 'RLo8uoVidsod6NPYh';
+
+  try {
+    await emailjs.sendForm(
+      serviceID,
+      templateID,
+      e.target,
+      publicKey
+    );
+    setIsModalOpen(true); // Show success modal
+  } catch (error) {
+    console.error('Failed to send:', error);
+    alert('Message failed to send. Please try again.');
+  }
+};
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -93,7 +111,7 @@ export default function Contact() {
                       href="mailto:support@neurobrief.ai" 
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
-                      support@neurobrief.ai
+                      omid.root1@gmail.com
                     </a>
                   </div>
                 </div>
@@ -151,7 +169,7 @@ export default function Contact() {
                   },
                   {
                     question: "Can I summarize multiple documents?",
-                    answer: "Yes, our premium plans allow batch processing of multiple documents."
+                    answer: "We are Currently working on multi-document summarization. For now, please summarize one document at a time."
                   }
                 ].map((faq, index) => (
                   <div key={index} className="border-b border-gray-200 dark:border-gray-700 pb-4">
@@ -161,7 +179,7 @@ export default function Contact() {
                 ))}
                 
                 <a 
-                  href="/faq" 
+                  href="/#" 
                   className="
                     inline-flex items-center text-blue-600 dark:text-blue-400
                     hover:text-blue-800 dark:hover:text-blue-300

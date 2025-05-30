@@ -17,7 +17,7 @@ import HistoryPage from './pages/HistoryPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import UsersManagementPage from './pages/UsersManagementPage';
-
+import FaqPage from './pages/FaqPage';
 // Global theme context
 export const ThemeContext = createContext({
   theme: 'light',
@@ -97,6 +97,7 @@ function Main() {
               isAuth ? <Navigate to="/summarize" replace /> : <LoginPage />
             }
           />
+          <Route path="/faq" element={<FaqPage />} />
           <Route
             path="/register"
             element={

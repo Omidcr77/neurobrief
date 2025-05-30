@@ -24,8 +24,8 @@ export default function Footer() {
               {[
                 { icon: <FaGithub />, url: "https://github.com/omidcr77" },
                 { icon: <FaFacebookF />, url: "https://www.facebook.com/omid.ps2" },
-                { icon: <FaTwitter />, url: "#" },
-                { icon: <FaLinkedinIn />, url: "#" },
+                // { icon: <FaTwitter />, url: "#" },
+                // { icon: <FaLinkedinIn />, url: "#" },
               ].map((social, index) => (
                 <a
                   key={index}
@@ -74,11 +74,11 @@ export default function Footer() {
             <h4 className="text-lg font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-3">
               {[
-                { label: "Documentation", url: "#" },
-                { label: "API", url: "#" },
-                { label: "Blog", url: "#" },
-                { label: "Help Center", url: "#" },
-                { label: "FAQ", url: "#" },
+                { label: "Documentation", url: "https://github.com/Omidcr77/neurobrief" },
+                // { label: "API", url: "#" },
+                // { label: "Blog", url: "#" },
+                // { label: "Help Center", url: "" },
+                // { label: "FAQ", url: "/" },
                 { label: "Privacy Policy", url: "#" },
               ].map((link, index) => (
                 <li key={index}>
