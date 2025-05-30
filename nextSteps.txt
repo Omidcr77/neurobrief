@@ -1,7 +1,0 @@
-🔧 Next Steps
-
-Apply the Tailwind v3 downgrade and verify your client compiles.
-
-Add the history routes on the server, restart it.
-
-Run your React app—navigate to /login, register, and then test Summarize and History pages.

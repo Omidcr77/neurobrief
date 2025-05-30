@@ -1,5 +1,0 @@
-1. add profile avatar  ... done
-2, add change password in Dashboard   .... done
-2. add new options in Summarize page
-3. make the Get in touch section Functional by sending it via Gmail
-4. change About.js Paragraph make it to my own
