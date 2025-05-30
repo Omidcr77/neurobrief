@@ -1,22 +1,22 @@
-// src/App.js
 import React, { useState, useEffect, createContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 
-import NavBar                from './components/NavBar';
-import BackToTop             from './components/BackToTop';
-import Footer                from './components/Footer';
+import NavBar from './components/NavBar';
+import BackToTop from './components/BackToTop';
+import Footer from './components/Footer';
+import DemoExperience from './components/DemoExperience'; // Add this import
 
-import LoginPage             from './pages/LoginPage';
-import WelcomePage           from './pages/WelcomePage';
-import RegisterPage          from './pages/RegisterPage';
-import SummarizePage         from './pages/SummarizePage';
-import HistoryPage           from './pages/HistoryPage';
-import DashboardPage         from './pages/DashboardPage';
-import AdminPage             from './pages/AdminPage';
-import UsersManagementPage   from './pages/UsersManagementPage';
+import LoginPage from './pages/LoginPage';
+import WelcomePage from './pages/WelcomePage';
+import RegisterPage from './pages/RegisterPage';
+import SummarizePage from './pages/SummarizePage';
+import HistoryPage from './pages/HistoryPage';
+import DashboardPage from './pages/DashboardPage';
+import AdminPage from './pages/AdminPage';
+import UsersManagementPage from './pages/UsersManagementPage';
 
 // Global theme context
 export const ThemeContext = createContext({
@@ -27,40 +27,80 @@ export const ThemeContext = createContext({
 Modal.setAppElement('#root');
 
 function Main() {
+  const [showDemoExperience, setShowDemoExperience] = useState(false);
+  const [toastMessage, setToastMessage] = useState({ type: '', text: '' }); // Add toast state
   const location = useLocation();
-  const isAuth   = Boolean(localStorage.getItem('token'));
-  const hideNav  = location.pathname === '/login'
-                 || location.pathname === '/register';
+  const navigate = useNavigate();
+  const isAuth = Boolean(localStorage.getItem('token'));
+  const hideNav = location.pathname === '/login' || 
+                  location.pathname === '/register';
+
+  // Auto-hide toast message
+  useEffect(() => {
+    if (toastMessage.text) {
+      const timer = setTimeout(() => setToastMessage({ type: '', text: '' }), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
 
   return (
     <>
-      {!hideNav && <NavBar />}
+      {showDemoExperience && (
+        <DemoExperience 
+          onDemoStart={(start) => {
+            setShowDemoExperience(false);
+            if (start) {
+              navigate('/dashboard');
+              setToastMessage({
+                type: 'info',
+                text: 'You are in demo mode. Data will reset periodically.'
+              });
+            }
+          }} 
+        />
+      )}
+      
+      {!hideNav && <NavBar setShowDemoExperience={setShowDemoExperience} />}
+      
+      {/* Toast Notification */}
+      {toastMessage.text && (
+        <div className={`fixed bottom-6 right-6 z-50 flex items-center space-x-3 px-5 py-3 rounded-xl shadow-2xl text-white ${
+          toastMessage.type === 'success' ? 'bg-green-500' : 
+          toastMessage.type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`}>
+          <span className="font-medium">{toastMessage.text}</span>
+          <button 
+            onClick={() => setToastMessage({ type: '', text: '' })} 
+            className="opacity-80 hover:opacity-100"
+          >
+            &times;
+          </button>
+        </div>
+      )}
 
       <div className="pt-16">
         <Routes>
           {/* Public — redirect logged-in users to /summarize */}
-          <Route
-            path="/"
-            element={
-              isAuth
-                ? <Navigate to="/summarize" replace />
-                : <WelcomePage />
-            }
-          />
+           <Route
+          path="/"
+          element={
+            isAuth ? (
+              <Navigate to="/summarize" replace />
+            ) : (
+              <WelcomePage setShowDemoExperience={setShowDemoExperience} />
+            )
+          }
+        />
           <Route
             path="/login"
             element={
-              isAuth
-                ? <Navigate to="/summarize" replace />
-                : <LoginPage />
+              isAuth ? <Navigate to="/summarize" replace /> : <LoginPage />
             }
           />
           <Route
             path="/register"
             element={
-              isAuth
-                ? <Navigate to="/summarize" replace />
-                : <RegisterPage />
+              isAuth ? <Navigate to="/summarize" replace /> : <RegisterPage />
             }
           />
 
@@ -71,20 +111,27 @@ function Main() {
           />
           <Route
             path="/history"
-            element={isAuth ? <HistoryPage />   : <Navigate to="/login" />}
+            element={isAuth ? <HistoryPage /> : <Navigate to="/login" />}
           />
           <Route
             path="/dashboard"
-            element={isAuth ? <DashboardPage /> : <Navigate to="/login" />}
+            element={
+              isAuth ? (
+                <DashboardPage setToastMessage={setToastMessage} />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
           />
           <Route
             path="/admin"
-            element={isAuth ? <AdminPage />     : <Navigate to="/login" />}
+            element={isAuth ? <AdminPage /> : <Navigate to="/login" />}
           />
           <Route
             path="/admin/users"
             element={isAuth ? <UsersManagementPage /> : <Navigate to="/login" />}
           />
+          
           {/* Fallback */}
           <Route
             path="*"
@@ -117,10 +164,10 @@ export default function App() {
     });
     const refresh = () => AOS.refresh();
     window.addEventListener('resize', refresh);
-    window.addEventListener('load',   refresh);
+    window.addEventListener('load', refresh);
     return () => {
       window.removeEventListener('resize', refresh);
-      window.removeEventListener('load',   refresh);
+      window.removeEventListener('load', refresh);
     };
   }, []);
 

@@ -4,6 +4,8 @@ import React, {
   useState,
   Fragment,
 } from 'react';
+
+import { useNavigate } from 'react-router-dom';
 import {
   FaSpinner,
   FaEdit,
@@ -20,6 +22,12 @@ import { Dialog, Transition } from '@headlessui/react';
 import api from '../api';
 
 export default function DashboardPage() {
+
+
+const navigate = useNavigate();
+const isDemo = localStorage.getItem('isDemo') === 'true';
+
+
   // --- Core data ---
   const [profile, setProfile] = useState(null);
   const [summaries, setSummaries] = useState([]);
@@ -210,7 +218,22 @@ export default function DashboardPage() {
           </p>
         </header>
 
-        {/* Profile Section */}
+        {/* Profile Section */} 
+{isDemo && (
+  <div className="mb-6 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800/50">
+    <p className="text-yellow-700 dark:text-yellow-300 text-center">
+      <span className="font-semibold">Demo Mode:</span> You're exploring with sample data. 
+      <button 
+        onClick={() => navigate('/register')}
+        className="ml-1 text-blue-600 dark:text-blue-400 hover:underline"
+      >
+        Create an account
+      </button> 
+      to save your work.
+    </p>
+  </div>
+)}
+
         <section className="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 max-w-2xl mx-auto p-6 sm:p-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">

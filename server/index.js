@@ -24,7 +24,9 @@ app.use('/api/summarize', require('./routes/summarize'));
 app.use('/api/summaries', require('./routes/history')); 
 app.use('/api/admin', require('./routes/admin')); // admin route
 
-
+// demo route 
+const demoRoutes = require('./routes/demo');
+app.use('/api/demo', demoRoutes);
 
 // Basic “Hello” route
 app.get('/', (_, res) => res.send('🧠 NeuroBrief API is live!'));

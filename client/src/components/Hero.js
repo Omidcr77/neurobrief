@@ -1,17 +1,18 @@
-// src/components/Hero.js
 import React, { useContext, useEffect, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../App';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import PropTypes from 'prop-types';
 import lightBg from '../assets/1.png';
 import darkBg from '../assets/2.png';
-import { FaArrowDown, FaBrain } from 'react-icons/fa';
+import { FaArrowDown, FaBrain, FaPlay } from 'react-icons/fa';
 
-export default function Hero() {
+export default function Hero({ setShowDemoExperience }) {
   const { theme } = useContext(ThemeContext);
   const bgUrl = theme === 'dark' ? darkBg : lightBg;
   const [isScrolled, setIsScrolled] = useState(false);
+  const [particles, setParticles] = useState([]);
 
   // Preload both images for instant theme-switch
   useEffect(() => {
@@ -19,11 +20,27 @@ export default function Hero() {
       const img = new Image();
       img.src = src;
     });
-    
-    // Handle scroll effect
+  }, []);
+
+  // Initialize particles
+  useEffect(() => {
+    const newParticles = Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      size: Math.random() * 10 + 5,
+      delay: Math.random() * 5,
+      duration: Math.random() * 10 + 10
+    }));
+    setParticles(newParticles);
+  }, []);
+
+  // Handle scroll effect
+  useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -54,20 +71,20 @@ export default function Hero() {
     >
       {/* Animated particles background */}
       <div className="absolute inset-0 overflow-hidden">
-        {[...Array(15)].map((_, i) => (
+        {particles.map((particle) => (
           <div
-            key={i}
+            key={particle.id}
             className="absolute rounded-full"
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 10 + 5}px`,
-              height: `${Math.random() * 10 + 5}px`,
+              top: `${particle.top}%`,
+              left: `${particle.left}%`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
               background: theme === 'dark' 
                 ? `rgba(96, 165, 250, ${Math.random() * 0.5 + 0.2})` 
                 : `rgba(59, 130, 246, ${Math.random() * 0.5 + 0.2})`,
-              animation: `float ${Math.random() * 10 + 10}s infinite ease-in-out`,
-              animationDelay: `${Math.random() * 5}s`,
+              animation: `float ${particle.duration}s infinite ease-in-out`,
+              animationDelay: `${particle.delay}s`,
               filter: 'blur(1px)',
             }}
           />
@@ -135,8 +152,11 @@ export default function Hero() {
             <span className="relative z-10">Get Started Free</span>
             <span className="absolute top-0 left-0 w-full h-full bg-white/10 opacity-0 hover:opacity-100 transition-opacity duration-300"></span>
           </Link>
-          <button
-            onClick={() => scrollTo('features')}
+           <button
+            onClick={() => {
+              setShowDemoExperience(true); // Call the function to show the demo
+              scrollTo('features');
+            }}
             className="
               px-8 py-3.5 rounded-lg text-lg font-semibold 
               text-gray-800 dark:text-gray-200 bg-white/90 dark:bg-gray-800/90
@@ -147,9 +167,7 @@ export default function Hero() {
               flex items-center justify-center gap-2
             "
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-            </svg>
+            <FaPlay className="h-4 w-4" />
             See Demo
           </button>
         </div>
