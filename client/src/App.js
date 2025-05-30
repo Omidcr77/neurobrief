@@ -9,6 +9,9 @@ import BackToTop from './components/BackToTop';
 import Footer from './components/Footer';
 import DemoExperience from './components/DemoExperience'; // Add this import
 
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+
 import LoginPage from './pages/LoginPage';
 import WelcomePage from './pages/WelcomePage';
 import RegisterPage from './pages/RegisterPage';
@@ -105,6 +108,9 @@ function Main() {
             }
           />
 
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+<Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+
           {/* Protected */}
           <Route
             path="/summarize"
@@ -138,6 +144,8 @@ function Main() {
             path="*"
             element={<Navigate to={isAuth ? '/summarize' : '/'} replace />}
           />
+
+          
         </Routes>
       </div>
     </>

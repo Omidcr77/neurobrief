@@ -7,8 +7,14 @@ const {
   login,
   getProfile,
   updateProfile,
-  changePassword      // ← import the new controller
+  changePassword,      // ← import the new controller
+  forgotPassword,
+  resetPassword
 } = require('../controllers/authController');
+
+// Public routes
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 
 // ─── Public ────────────────────────────────────────
 router.post('/register', register);
@@ -23,5 +29,7 @@ router.put ('/profile', auth, updateProfile);
 
 // **New** Change-Password route
 router.put('/password', auth, changePassword);
+
+
 
 module.exports = router;

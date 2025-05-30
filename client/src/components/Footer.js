@@ -24,8 +24,8 @@ export default function Footer() {
               {[
                 { icon: <FaGithub />, url: "https://github.com/omidcr77" },
                 { icon: <FaFacebookF />, url: "https://www.facebook.com/omid.ps2" },
-                // { icon: <FaTwitter />, url: "#" },
-                // { icon: <FaLinkedinIn />, url: "#" },
+                { icon: <FaTwitter />, url: "https://x.com/xai" },
+                { icon: <FaLinkedinIn />, url: "https://www.linkedin.com/company/randompy" },
               ].map((social, index) => (
                 <a
                   key={index}
