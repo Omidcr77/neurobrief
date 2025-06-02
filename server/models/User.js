@@ -23,8 +23,15 @@ const userSchema = new mongoose.Schema({
     enum: ['user','admin'],
     default: 'user'
   },
+
+    // ─── NEW FIELDS FOR EMAIL CONFIRMATION ─────────────────────
+  isVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  emailVerificationExpires: { type: Date },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
+
+  
     status: { type: String, enum: ['active','banned'], default: 'active' },
     isDemo: { type: Boolean, default: false },
   createdAt: {

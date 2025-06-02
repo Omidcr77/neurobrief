@@ -6,20 +6,29 @@ const summarySchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
- input: {
+
+  // NEW: inputType must be one of 'text', 'pdf', or 'url'
+  // This is what your frontend is expecting when it does item.inputType
+  inputType: {
     type: String,
-    required: function() { 
-      return this.inputType === 'text'; // Only require for text inputs
-    }
-  },
-  input: {
-    type: String,   // raw text, URL, or PDF filename/ref
+    enum: ['text', 'pdf', 'url'],
     required: true
   },
+
+  // only one `input` field (no duplicate). This stores either:
+  //  • raw text (if inputType === 'text')
+  //  • a URL string  (if inputType === 'url')
+  //  • the PDF filename or reference (if inputType === 'pdf')
+  input: {
+    type: String,
+    required: true
+  },
+
   summary: {
     type: String,
     required: true
   },
+
   createdAt: {
     type: Date,
     default: Date.now

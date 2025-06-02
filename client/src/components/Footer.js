@@ -1,15 +1,38 @@
+// Footer.js
+
 import React from 'react';
-import { 
-  FaGithub, 
-  FaFacebookF, 
-  FaTwitter, 
+import { Link } from 'react-router-dom';
+import {
+  FaGithub,
+  FaFacebookF,
+  FaTwitter,
   FaLinkedinIn,
   FaHeart
 } from 'react-icons/fa';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  
+
+  // Define two arrays: one for “internal” links (use <Link>)
+  // and one for “external or anchor” links (use <a>).
+  const quickLinks = [
+    { label: 'Home',        to: '/' },
+    { label: 'About',       to: '#about',      isAnchor: true },
+    { label: 'Services',    to: '#services',   isAnchor: true },
+    { label: 'Dashboard',   to: '/dashboard' },
+    { label: 'History',     to: '/history' },
+    { label: 'Contact',     to: '#contact',    isAnchor: true }
+  ];
+
+  const resourceLinks = [
+    { label: 'Documentation',  href: 'https://github.com/Omidcr77/neurobrief' },
+    // { label: "API", href: "#" },
+    // { label: "Blog", href: "#" },
+    // { label: "Help Center", href: "" },
+    // { label: "FAQ", href: "/" },
+    { label: 'Privacy Policy', href: '#' }
+  ];
+
   return (
     <footer className="bg-gradient-to-r from-gray-900 to-blue-900 text-gray-300 pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -22,13 +45,13 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4">
               {[
-                { icon: <FaGithub />, url: "https://github.com/omidcr77" },
-                { icon: <FaFacebookF />, url: "https://www.facebook.com/omid.ps2" },
-                { icon: <FaTwitter />, url: "https://x.com/xai" },
-                { icon: <FaLinkedinIn />, url: "https://www.linkedin.com/company/randompy" },
-              ].map((social, index) => (
+                { icon: <FaGithub />,     url: 'https://github.com/omidcr77' },
+                { icon: <FaFacebookF />,  url: 'https://www.facebook.com/omid.ps2' },
+                { icon: <FaTwitter />,    url: 'https://x.com/xai' },
+                { icon: <FaLinkedinIn />, url: 'https://www.linkedin.com/company/randompy' }
+              ].map((social, idx) => (
                 <a
-                  key={index}
+                  key={idx}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -44,47 +67,46 @@ export default function Footer() {
               ))}
             </div>
           </div>
-          
-          {/* Links Column */}
+
+          {/* Quick Links Column */}
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
             <ul className="space-y-3">
-              {[
-                { label: "Home", url: "/" },
-                { label: "About", url: "#about" },
-                { label: "Services", url: "#services" },
-                { label: "Dashboard", url: "/dashboard" },
-                { label: "History", url: "/history" },
-                { label: "Contact", url: "#contact" },
-              ].map((link, index) => (
+              {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <a
-                    href={link.url}
-                    className="hover:text-white transition-colors"
-                  >
-                    {link.label}
-                  </a>
+                  {link.isAnchor ? (
+                    // For in-page anchors, still use a normal <a>
+                    <a
+                      href={link.to}
+                      className="hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    // Otherwise, use React Router's <Link>
+                    <Link
+                      to={link.to}
+                      className="hover:text-white transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
-          
+
           {/* Resources Column */}
           <div>
             <h4 className="text-lg font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-3">
-              {[
-                { label: "Documentation", url: "https://github.com/Omidcr77/neurobrief" },
-                // { label: "API", url: "#" },
-                // { label: "Blog", url: "#" },
-                // { label: "Help Center", url: "" },
-                // { label: "FAQ", url: "/" },
-                { label: "Privacy Policy", url: "#" },
-              ].map((link, index) => (
+              {resourceLinks.map((link, index) => (
                 <li key={index}>
                   <a
-                    href={link.url}
+                    href={link.href}
                     className="hover:text-white transition-colors"
+                    target={link.href.startsWith('http') ? '_blank' : undefined}
+                    rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   >
                     {link.label}
                   </a>
@@ -93,7 +115,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-        
+
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             © {currentYear} NeuroBrief. All rights reserved.

@@ -1,3 +1,5 @@
+// emailService.js
+
 const nodemailer = require('nodemailer');
 
 // Create reusable transporter object
@@ -9,10 +11,11 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+
 /**
  * Send password reset email
- * @param {string} email - Recipient email address
- * @param {string} resetUrl - Password reset URL
+ * @param {string} email     Recipient’s email address
+ * @param {string} resetUrl  Password‐reset URL
  */
 exports.sendPasswordResetEmail = async (email, resetUrl) => {
   try {
@@ -56,10 +59,45 @@ exports.sendPasswordResetEmail = async (email, resetUrl) => {
   }
 
   transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP connection error:', error);
-  } else {
-    console.log('SMTP server is ready to send messages');
+    if (error) {
+      console.error('SMTP connection error:', error);
+    } else {
+      console.log('SMTP server is ready to send messages');
+    }
+  });
+};
+
+
+/**
+ * Send email verification code
+ * @param {string} email             Recipient’s email address
+ * @param {string} verificationCode  6-digit numeric code
+ */
+exports.sendEmailVerification = async (email, verificationCode) => {
+  try {
+    const mailOptions = {
+      from: `"NeuroBrief Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your Verification Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #2563eb;">Email Verification</h2>
+          <p>Thank you for signing up for NeuroBrief.</p>
+          <p>Your verification code is:</p>
+          <h1 style="font-size: 2rem; letter-spacing: 0.1rem; margin: 20px 0;">${verificationCode}</h1>
+          <p>This code will expire in 1 hour.</p>
+          <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+          <p style="font-size: 0.9rem; color: #6b7280;">
+            If you didn’t request this, please ignore this email.
+          </p>
+        </div>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification code email sent to ${email}`);
+  } catch (error) {
+    console.error('Email send error:', error);
+    throw new Error('Failed to send verification email');
   }
-});
 };

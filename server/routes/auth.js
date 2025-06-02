@@ -9,7 +9,8 @@ const {
   updateProfile,
   changePassword,      // ← import the new controller
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyEmail
 } = require('../controllers/authController');
 
 // Public routes
@@ -19,6 +20,8 @@ router.post('/reset-password/:token', resetPassword);
 // ─── Public ────────────────────────────────────────
 router.post('/register', register);
 router.post('/login',    login);
+router.post('/verify-email', verifyEmail);
+
 
 // ─── Protected ────────────────────────────────────
 router.use(auth);
