@@ -378,25 +378,26 @@ const isDemo = localStorage.getItem('isDemo') === 'true';
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {summaries.slice(0, 3).map((item) => ( // Display only recent 3 for dashboard
-                <article
-                  key={item._id}
-                  className="
-                    relative bg-white dark:bg-gray-800 p-5 sm:p-6
-                    rounded-xl shadow-lg hover:shadow-2xl
-                    transition-all duration-300 ease-in-out transform hover:-translate-y-1
-                    flex flex-col
-                  "
-                >
-                  <span className="
-                    absolute top-4 right-4
-                    inline-block px-3 py-1 text-xs font-semibold rounded-full
-                    ${item.inputType === 'text' ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100' :
-                      item.inputType === 'pdf' ? 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100' :
-                      'bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100'}
-                  ">
-                    {item.inputType.toUpperCase()}
-                  </span>
+              {summaries.slice(0, 3).map((item) => (
+  <article
+    key={item._id}
+    className="
+      relative bg-white dark:bg-gray-800 p-5 sm:p-6
+      rounded-xl shadow-lg hover:shadow-2xl
+      transition-all duration-300 ease-in-out transform hover:-translate-y-1
+      flex flex-col
+    "
+  >
+    <span className="
+      absolute top-4 right-4
+      inline-block px-3 py-1 text-xs font-semibold rounded-full
+      ${item.inputType === 'text' ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100' :
+        item.inputType === 'pdf' ? 'bg-red-100 text-red-800 dark:bg-red-700 dark:text-red-100' :
+        'bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100'}
+    ">
+      {/* FIXED: Added null check for inputType */}
+      {(item.inputType || 'unknown').toUpperCase()}
+    </span>
 
                   <h3 className="
                     mt-6 text-sm text-gray-500
@@ -486,9 +487,12 @@ const isDemo = localStorage.getItem('isDemo') === 'true';
                   >
                     Full Summary
                   </Dialog.Title>
-                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                    Type: <span className="font-medium text-gray-700 dark:text-gray-300">{selected?.inputType?.toUpperCase()}</span> | Date: {new Date(selected?.createdAt).toLocaleString()}
-                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+  Type: <span className="font-medium text-gray-700 dark:text-gray-300">
+    {/* FIXED: Added null check for inputType */}
+    {(selected?.inputType || 'unknown').toUpperCase()}
+  </span> | Date: {new Date(selected?.createdAt).toLocaleString()}
+</p>
 
                   {selected?.input && (selected.inputType === 'url' || selected.inputType === 'pdf') && (
                     <div className="mb-4">

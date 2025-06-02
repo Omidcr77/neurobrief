@@ -23,7 +23,7 @@ exports.urlSummarize = async (req, res) => {
 
     // 2. Validate summaryType and summaryLength
     const validTypes = ['abstractive', 'extractive'];
-    const validLengths = ['short', 'medium', 'detailed'];
+    const validLengths = ['short', 'medium', 'long'];
 
     if (summaryType && !validTypes.includes(summaryType)) {
         return res.status(400).json({ message: 'Invalid summary type provided.' });

@@ -6,10 +6,11 @@ const summarySchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  inputType: {
+ input: {
     type: String,
-    enum: ['text', 'url', 'pdf'],
-    required: true
+    required: function() { 
+      return this.inputType === 'text'; // Only require for text inputs
+    }
   },
   input: {
     type: String,   // raw text, URL, or PDF filename/ref

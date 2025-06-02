@@ -1,8 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaLock, FaEye, FaEyeSlash, FaSpinner, FaCheckCircle } from 'react-icons/fa';
+import { 
+  FaLock, 
+  FaEye, 
+  FaEyeSlash, 
+  FaSpinner, 
+  FaCheckCircle,
+  FaArrowLeft,
+  FaMoon,
+  FaSun
+} from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import api from '../api';
+import { ThemeContext } from '../App';
 
 export default function ResetPasswordPage() {
   const { token } = useParams();
@@ -13,6 +23,11 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Theme toggle
+  const { theme, setTheme } = useContext(ThemeContext);
+  const toggleTheme = () => 
+    setTheme(theme === 'dark' ? 'light' : 'dark');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +52,27 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 dark:from-gray-900 dark:to-blue-900">
+      {/* Updated Header */}
+      <header className="fixed top-0 left-0 w-full flex items-center justify-between px-6 h-14 bg-white dark:bg-gray-800 shadow-md z-20">
+        <button
+          onClick={() => navigate(-1)}
+          className="text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Go back"
+        >
+          <FaArrowLeft size={18} />
+        </button>
+        <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+          Reset Password
+        </h1>
+        <button
+          onClick={toggleTheme}
+          className="text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 rounded-full p-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? <FaSun size={18} /> : <FaMoon size={18} />}
+        </button>
+      </header>
+
       <section className="pt-20 pb-10 px-4 flex flex-col items-center justify-center min-h-screen">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -96,7 +132,8 @@ export default function ResetPasswordPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-3 text-gray-500 dark:text-gray-400"
+                      className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 focus:outline-none"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
                     </button>

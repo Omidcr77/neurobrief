@@ -1,4 +1,3 @@
-// src/components/NavBar.js
 import React, {
   useState,
   useContext,
@@ -120,14 +119,16 @@ export default function NavBar() {
     { to:'/login',    label:'Login',   type:'link' },
     { to:'/register', label:'Sign Up', type:'link', primary:true },
   ];
+  
+  // UPDATED: Removed dashboard from main nav
   const authLinks = [
     { to:'/summarize',label:'Summarize',type:'link' },
     { to:'/history',  label:'History',  type:'link' },
-    { to:'/dashboard',label:'Dashboard',type:'link' },
   ];
+  
   if (isAdmin) {
     authLinks.push(
-      { to:'/admin',      label:'Admin', type:'link' },
+      { to:'/admin',      label:'Admin', type:'link', exact: true }, // Added exact:true
       { to:'/admin/users',label:'Users', type:'link' },
     );
   }
@@ -142,14 +143,21 @@ export default function NavBar() {
     if (link.type==='anchor') {
       isActive = isLanding && activeSection===link.to.slice(1);
     } else {
-      isActive = !isLanding && pathname===link.to;
+      // FIXED: Use exact match if specified, otherwise startsWith
+      if (link.exact) {
+        isActive = pathname === link.to;
+      } else {
+        isActive = pathname.startsWith(link.to);
+      }
     }
+    
     let cls = base;
     if (link.primary) {
       cls += ' bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:from-blue-700 hover:to-indigo-800 px-4 py-2 rounded-lg transition-all transform hover:scale-[1.03] shadow-md';
     }
     if (isActive) {
-      cls += ' text-blue-600 dark:text-blue-400 font-semibold';
+      // Enhanced active state with underline and brighter color
+      cls += ' text-blue-600 dark:text-blue-400 font-semibold relative after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400 after:rounded-full';
     }
     return cls;
   };
@@ -189,7 +197,7 @@ export default function NavBar() {
           {/* DESKTOP */}
           <div className="hidden md:flex items-center space-x-6">
             {linksToShow.map((link, i) => {
-              const base = `relative font-medium transition-colors duration-200 ${linkColor}`;
+              const base = `relative font-medium transition-colors duration-200 ${linkColor} pb-1`;
               if (link.type==='anchor') {
                 return (
                   <a
@@ -228,12 +236,13 @@ export default function NavBar() {
               <div className="relative" ref={avatarMenuRef}>
                 <button
                   onClick={()=>setAvatarMenuOpen(o=>!o)}
-                  className="
+                  className={`
                     w-10 h-10 rounded-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white
                     flex items-center justify-center
                     focus:outline-none focus:ring-2 focus:ring-indigo-400
                     shadow-md hover:shadow-lg transition-all
-                  "
+                    ${avatarMenuOpen ? 'ring-2 ring-indigo-400' : ''}
+                  `}
                   aria-haspopup="true"
                   aria-expanded={avatarMenuOpen}
                 >
@@ -326,12 +335,23 @@ export default function NavBar() {
             const baseMob = link.primary
               ? 'w-4/5 text-center py-3 font-medium bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-800 transition-all transform hover:scale-[1.03]'
               : `w-4/5 text-center py-3 font-medium transition ${mobileColor}`;
-            const isActive =
-              (link.type==='anchor' && activeSection===link.to.slice(1))
-              || (link.type==='link' && pathname===link.to);
+            
+            // FIXED: Use exact match if specified, otherwise startsWith
+            let isActive = false;
+            if (link.type === 'anchor') {
+              isActive = isLanding && activeSection === link.to.slice(1);
+            } else {
+              if (link.exact) {
+                isActive = pathname === link.to;
+              } else {
+                isActive = pathname.startsWith(link.to);
+              }
+            }
+            
             const activeCls = isActive
-              ? ' text-blue-600 dark:text-blue-400 font-semibold'
+              ? ' text-blue-600 dark:text-blue-400 font-semibold bg-blue-50/30 dark:bg-blue-900/30'
               : '';
+            
             if (link.type==='anchor') {
               return (
                 <a

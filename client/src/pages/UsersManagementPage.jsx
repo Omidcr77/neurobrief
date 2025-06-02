@@ -130,7 +130,6 @@ export default function UsersManagementPage() {
             >
               <option value="">All Status</option>
               <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
               <option value="banned">Banned</option>
             </select>
             
@@ -318,7 +317,7 @@ export default function UsersManagementPage() {
                             onChange={e => setEditing(ed => ({ ...ed, [field]: e.target.value }))}
                             className="w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                           >
-                            {(field === 'role' ? ['user', 'admin'] : ['active', 'inactive', 'banned'])
+                            {(field === 'role' ? ['user', 'admin'] : ['active', 'banned'])
                               .map(opt => (
                                 <option key={opt} value={opt} className="capitalize">
                                   {opt}

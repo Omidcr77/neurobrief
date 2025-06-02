@@ -20,7 +20,6 @@ import HistoryPage from './pages/HistoryPage';
 import DashboardPage from './pages/DashboardPage';
 import AdminPage from './pages/AdminPage';
 import UsersManagementPage from './pages/UsersManagementPage';
-import FaqPage from './pages/FaqPage';
 // Global theme context
 export const ThemeContext = createContext({
   theme: 'light',
@@ -35,8 +34,11 @@ function Main() {
   const location = useLocation();
   const navigate = useNavigate();
   const isAuth = Boolean(localStorage.getItem('token'));
-  const hideNav = location.pathname === '/login' || 
-                  location.pathname === '/register';
+  const hideNav = 
+  location.pathname === '/login' || 
+  location.pathname === '/register' ||
+  location.pathname === '/forgot-password' ||
+  location.pathname.startsWith('/reset-password');
 
   // Auto-hide toast message
   useEffect(() => {
@@ -100,7 +102,6 @@ function Main() {
               isAuth ? <Navigate to="/summarize" replace /> : <LoginPage />
             }
           />
-          <Route path="/faq" element={<FaqPage />} />
           <Route
             path="/register"
             element={

@@ -325,8 +325,14 @@ export default function SummarizePage() {
                   <div className="space-y-2 bg-gray-50 dark:bg-gray-700/50 p-3 rounded-md border dark:border-gray-600">
                     <StyledRadio name="summaryLength" value="short" checked={summaryLength === 'short'} onChange={(e) => setSummaryLength(e.target.value)} label="Short (~50 words)" icon={FaTextHeight} />
                     <StyledRadio name="summaryLength" value="medium" checked={summaryLength === 'medium'} onChange={(e) => setSummaryLength(e.target.value)} label="Medium (~100 words)" icon={FaTextHeight} />
-                    <StyledRadio name="summaryLength" value="detailed" checked={summaryLength === 'detailed'} onChange={(e) => setSummaryLength(e.target.value)} label="Long (~200+ words)" icon={FaTextHeight} />
-                  </div>
+<StyledRadio 
+  name="summaryLength" 
+  value="long" // Changed from "detailed"
+  checked={summaryLength === 'long'} 
+  onChange={(e) => setSummaryLength(e.target.value)} 
+  label="Long (~200+ words)" 
+  icon={FaTextHeight} 
+/>                  </div>
                 </fieldset>
               </div>
 

@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-    status: { type: String, enum: ['active','inactive','banned'], default: 'active' },
+    status: { type: String, enum: ['active','banned'], default: 'active' },
     isDemo: { type: Boolean, default: false },
   createdAt: {
     type: Date,
