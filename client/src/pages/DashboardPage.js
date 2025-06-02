@@ -32,7 +32,7 @@ const isDemo = localStorage.getItem('isDemo') === 'true';
   const [profile, setProfile] = useState(null);
   const [summaries, setSummaries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // This will be replaced by toast
+  // const [error, setError] = useState(null);
 
   // --- Edit Profile state ---
   const [isEditing, setIsEditing] = useState(false);
