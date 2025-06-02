@@ -6,8 +6,8 @@ const crypto = require('crypto'); // For generating secure tokens
 const User = require('../models/User');
 const {
   sendPasswordResetEmail,
-  sendEmailVerification
-} = require('../services/EmailService');
+  sendEmailVerification 
+} = require('../services/emailService');
 
 
 /**

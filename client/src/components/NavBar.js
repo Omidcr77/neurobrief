@@ -268,7 +268,7 @@ export default function NavBar() {
                       <FaUserCircle className="mr-3 text-blue-500" />
                       Profile
                     </Link>
-                    <button
+                    {/* <button
                       onClick={()=>{
                         navigate('/dashboard',{state:{openChangePwd:true}});
                         setAvatarMenuOpen(false);
@@ -281,7 +281,7 @@ export default function NavBar() {
                     >
                       <FaUserCircle className="mr-3 text-blue-500" />
                       Change Password
-                    </button>
+                    </button> */}
                     <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
                     <button
                       onClick={()=>{
