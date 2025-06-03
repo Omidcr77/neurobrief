@@ -15,8 +15,9 @@ import {
   FaFilter,
 } from "react-icons/fa";
 import { Dialog, Transition } from "@headlessui/react";
+
 import { jsPDF } from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import api from "../api";
 
 export default function HistoryPage() {
@@ -172,97 +173,111 @@ export default function HistoryPage() {
     [downloadFile]
   );
 
-  const downloadPdf = useCallback(
-    async (item) => {
-      try {
-        setDownloadingId(item._id);
-        const doc = new jsPDF();
-        const margin = 15;
-        let y = margin;
+const downloadPdf = useCallback(
+  async (item) => {
+    try {
+      // Set a loading state so the UI can show a spinner on this item
+      setDownloadingId(item._id);
 
-        // Document header
-        doc.setFontSize(20);
-        doc.setTextColor(41, 128, 185);
-        doc.text("NeuroBrief Summary", margin, y);
-        y += 12;
+      // Create a new jsPDF instance
+      const doc = new jsPDF();
+      const margin = 15;
+      let y = margin;
 
-        doc.setFontSize(12);
-        doc.setTextColor(100);
-        doc.text(
-          `Generated: ${new Date(item.createdAt).toLocaleString()}`,
-          margin,
-          y
-        );
-        y += 8;
+      // 1) Document header
+      doc.setFontSize(20);
+      doc.setTextColor(41, 128, 185);
+      doc.text("NeuroBrief Summary", margin, y);
+      y += 12;
 
-        // Metadata section
-        const metadata = [
-          { label: "Type", value: item.inputType.toUpperCase() },
-          { label: "Summary Type", value: item.summaryOptions?.type || "general" },
-          { label: "Length", value: formatLength(item.summaryOptions?.length) },
-        ];
+      doc.setFontSize(12);
+      doc.setTextColor(100);
+      doc.text(
+        `Generated: ${new Date(item.createdAt).toLocaleString()}`,
+        margin,
+        y
+      );
+      y += 8;
 
-        if (item.summaryOptions?.focus) {
-          metadata.push({ label: "Focus", value: item.summaryOptions.focus });
-        }
+      // 2) Metadata section (Type, Summary Type, Length, etc.)
+      const metadata = [
+        { label: "Type", value: item.inputType.toUpperCase() },
+        {
+          label: "Summary Type",
+          value: item.summaryOptions?.type || "general",
+        },
+        {
+          label: "Length",
+          value: formatLength(item.summaryOptions?.length),
+        },
+      ];
 
-        if (item.input && item.inputType !== "text") {
-          const sourceType = item.inputType === "pdf" ? "File" : "Source";
-          metadata.push({
-            label: sourceType,
-            value: item.inputFileName || item.input,
-          });
-        }
-
-        // Metadata table
-        doc.autoTable({
-          startY: y,
-          head: [["Attribute", "Value"]],
-          body: metadata.map((m) => [m.label, m.value]),
-          theme: "grid",
-          headStyles: {
-            fillColor: [41, 128, 185],
-            textColor: 255,
-            fontStyle: "bold",
-          },
-          styles: { fontSize: 10, cellPadding: 3 },
-          margin: { left: margin, right: margin },
-        });
-
-        y = doc.lastAutoTable.finalY + 12;
-
-        // Summary content
-        doc.setFontSize(16);
-        doc.setTextColor(41, 128, 185);
-        doc.text("Summary Content", margin, y);
-        y += 10;
-
-        doc.setFontSize(12);
-        doc.setTextColor(40);
-        const splitSummary = doc.splitTextToSize(
-          item.summary,
-          doc.internal.pageSize.width - margin * 2
-        );
-
-        doc.text(splitSummary, margin, y);
-
-        doc.save(`NeuroBrief_Summary_${item._id.slice(-6)}.pdf`);
-        setToastMessage({
-          type: "success",
-          text: "PDF download started!",
-        });
-      } catch (error) {
-        console.error("PDF generation failed:", error);
-        setToastMessage({
-          type: "error",
-          text: "Failed to generate PDF. Please try again.",
-        });
-      } finally {
-        setTimeout(() => setDownloadingId(null), 1000);
+      if (item.summaryOptions?.focus) {
+        metadata.push({ label: "Focus", value: item.summaryOptions.focus });
       }
-    },
-    [formatLength]
-  );
+
+      if (item.input && item.inputType !== "text") {
+        const sourceType = item.inputType === "pdf" ? "File" : "Source";
+        metadata.push({
+          label: sourceType,
+          value: item.inputFileName || item.input,
+        });
+      }
+
+      // 3) Render the metadata table using autoTable
+      autoTable(doc, {
+        startY: y,
+        head: [["Attribute", "Value"]],
+        body: metadata.map((m) => [m.label, m.value]),
+        theme: "grid",
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        styles: { fontSize: 10, cellPadding: 3 },
+        margin: { left: margin, right: margin },
+      });
+
+      // After autoTable finishes, grab the final Y position
+      y = doc.lastAutoTable.finalY + 12;
+
+      // 4) Summary content header
+      doc.setFontSize(16);
+      doc.setTextColor(41, 128, 185);
+      doc.text("Summary Content", margin, y);
+      y += 10;
+
+      // 5) Split and render summary text
+      doc.setFontSize(12);
+      doc.setTextColor(40);
+      const splitSummary = doc.splitTextToSize(
+        item.summary,
+        doc.internal.pageSize.width - margin * 2
+      );
+      doc.text(splitSummary, margin, y);
+
+      // 6) Trigger download
+      doc.save(`NeuroBrief_Summary_${item._id.slice(-6)}.pdf`);
+
+      // Optional: show a success toast/notification
+      setToastMessage({
+        type: "success",
+        text: "PDF download started!",
+      });
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      setToastMessage({
+        type: "error",
+        text: "Failed to generate PDF. Please try again.",
+      });
+    } finally {
+      // Clear loading state after a short delay so the spinner disappears
+      setTimeout(() => setDownloadingId(null), 1000);
+    }
+  },
+  [formatLength]
+);
 
   // Copy to clipboard
   const handleCopyToClipboard = useCallback((text) => {
