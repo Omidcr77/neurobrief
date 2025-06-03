@@ -36,7 +36,7 @@ export default function HistoryPage() {
   // Format summary length
   const formatLength = useCallback((length) => {
     if (!length) return "medium";
-    return length === "long" ? "detailed" : length;
+    return length === "long" ? "long" : length;
   }, []);
 
   // Fetch history with error handling
